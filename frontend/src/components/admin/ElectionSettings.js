@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5000/api/admin/settings';
+import api from '../../utils/api'; // Import the centralized api utility
 
 const ElectionSettings = () => {
   const [settings, setSettings] = useState({
@@ -17,7 +15,8 @@ const ElectionSettings = () => {
 
   const fetchSettings = async () => {
     try {
-      const res = await axios.get(API_URL); // TODO: Add auth token
+      // Use the new api utility. This GET request is public.
+      const res = await api.get('/admin/settings');
       // Format dates for input[type=datetime-local]
       const formattedSettings = {
         votingStartDate: res.data.votingStartDate ? new Date(res.data.votingStartDate).toISOString().slice(0, 16) : '',
@@ -37,7 +36,8 @@ const ElectionSettings = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(API_URL, settings); // TODO: Add auth token
+      // Use the new api utility. Auth token will be sent automatically.
+      await api.post('/admin/settings', settings);
       setMessage('Settings saved successfully.');
     } catch (error) {
       handleApiError(error, 'Failed to save settings.');

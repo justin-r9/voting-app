@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../utils/api'; // Import the centralized api utility
 
 const VotingPage = () => {
   const [candidates, setCandidates] = useState([]);
@@ -11,8 +11,8 @@ const VotingPage = () => {
   useEffect(() => {
     const fetchCandidates = async () => {
       try {
-        // This endpoint is public for fetching candidate lists
-        const res = await axios.get('http://localhost:5000/api/admin/candidates');
+        // Use the new api utility. This endpoint is public.
+        const res = await api.get('/admin/candidates');
         setCandidates(res.data);
       } catch (error) {
         setMessage('Failed to load candidates. Please try refreshing the page.');
@@ -30,7 +30,8 @@ const VotingPage = () => {
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/voting/cast-vote', {
+      // Use the new api utility. This endpoint is public.
+      const res = await api.post('/voting/cast-vote', {
         code,
         candidateId: selectedCandidate,
       });

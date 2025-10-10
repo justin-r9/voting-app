@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5000/api/admin/results';
+import api from '../../utils/api'; // Import the centralized api utility
 
 const ResultsDashboard = () => {
   const [results, setResults] = useState(null);
@@ -13,8 +11,8 @@ const ResultsDashboard = () => {
 
   const fetchResults = async () => {
     try {
-      // TODO: Add authorization token for security
-      const res = await axios.get(API_URL);
+      // Use the new api utility. The auth token will be sent automatically.
+      const res = await api.get('/admin/results');
       setResults(res.data);
     } catch (err) {
       setError('Failed to fetch results. Please ensure the server is running and you are authorized.');

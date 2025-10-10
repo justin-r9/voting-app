@@ -47,6 +47,10 @@ const userSchema = new Schema({
   hasVoted: {
     type: Boolean,
     default: false
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true,

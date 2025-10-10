@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5000/api/auth/login';
+import { useNavigate } from 'react-router-dom';
+import api from '../../utils/api'; // Import the centralized api utility
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +8,7 @@ const Login = () => {
     password: '',
   });
   const [message, setMessage] = useState('');
+  const navigate = useNavigate(); // Hook for navigation
 
   const { email, password } = formData;
 
@@ -18,16 +18,25 @@ const Login = () => {
     e.preventDefault();
     setMessage('');
     try {
-      const res = await axios.post(API_URL, formData); // Corrected variable name
-      // TODO: Handle successful login: store token in localStorage, set auth state, and redirect.
-      setMessage('Login successful!');
-      console.log('Token:', res.data.token);
+      // Use the new api utility. The base URL is already set.
+      const res = await api.post('/auth/login', formData);
+
+      // 1. Store the token in localStorage
+      localStorage.setItem('token', res.data.token);
+
+      setMessage('Login successful! Redirecting...');
+
+      // 2. Redirect to the homepage after a short delay
+      setTimeout(() => navigate('/'), 1000);
+
     } catch (error) {
       if (error.response) {
         setMessage(`Error: ${error.response.data.message}`);
       } else {
         setMessage('An unexpected error occurred. Please try again.');
       }
+      // Clear token if login fails
+      localStorage.removeItem('token');
       console.error('Login Error:', error);
     }
   };

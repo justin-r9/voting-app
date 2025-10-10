@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../../utils/api'; // Import the centralized api utility
 
 const VoterUpload = () => {
   const [file, setFile] = useState(null);
@@ -20,11 +20,11 @@ const VoterUpload = () => {
     formData.append('votersFile', file);
 
     try {
-      // The backend API is expected to be running on port 5000
-      const res = await axios.post('http://localhost:5000/api/admin/upload-voters', formData, {
+      // Use the new api utility. The auth token will be added automatically.
+      const res = await api.post('/admin/upload-voters', formData, {
         headers: {
+          // Must override the default 'Content-Type' for file uploads
           'Content-Type': 'multipart/form-data',
-          // TODO: Add authorization token for security
         },
       });
       setMessage(res.data.message);

@@ -1,31 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import api from '../../utils/api';
 
 const UserHomepage = () => {
-  const [user, setUser] = useState({
-    name: 'John Doe',
-    regNumber: '2023/ABC123',
-    // ... other placeholder data
-  });
+  const [user, setUser] = useState(null);
   const [electionSettings, setElectionSettings] = useState({});
   const [timeLeft, setTimeLeft] = useState('');
   const [isVotingOpen, setIsVotingOpen] = useState(false);
   const [voteMessage, setVoteMessage] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
+  const navigate = useNavigate();
 
-  // Fetch election settings and user data
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        // Fetch settings
-        const settingsRes = await axios.get('http://localhost:5000/api/admin/settings');
-        setElectionSettings(settingsRes.data);
+        // Fetch user data from the new protected endpoint
+        const userRes = await api.get('/auth/me');
+        setUser(userRes.data);
 
-        // TODO: Fetch real user data from a protected route like /api/auth/me
-        // const userRes = await axios.get('/api/auth/me', { headers: { 'x-auth-token': /* get token from storage */ } });
-        // setUser(userRes.data);
+        // Fetch election settings
+        const settingsRes = await api.get('/admin/settings');
+        setElectionSettings(settingsRes.data);
       } catch (error) {
         console.error('Failed to fetch initial data:', error);
+        // If we fail to get user data, it likely means the token is invalid or expired.
+        // Log the user out.
+        handleLogout();
       }
     };
     fetchInitialData();
@@ -42,20 +41,17 @@ const UserHomepage = () => {
       const end = new Date(votingEndDate);
 
       if (now < start) {
-        // Before voting period
-        const difference = start - now;
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((difference / 1000 / 60) % 60);
-        const seconds = Math.floor((difference / 1000) % 60);
-        setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+        const diff = start - now;
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / 1000 / 60) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        setTimeLeft(`${d}d ${h}h ${m}m ${s}s`);
         setIsVotingOpen(false);
       } else if (now >= start && now <= end) {
-        // During voting period
         setTimeLeft('Voting is now open!');
         setIsVotingOpen(true);
       } else {
-        // After voting period
         setTimeLeft('Voting has ended.');
         setIsVotingOpen(false);
         clearInterval(timer);
@@ -68,44 +64,59 @@ const UserHomepage = () => {
   const handleVoteClick = async () => {
     if (window.confirm('You are about to proceed to vote. You cannot go back after this step. Do you want to continue?')) {
       try {
-        // TODO: Get the real auth token from localStorage
-        const token = 'some-auth-token-from-storage';
-        const res = await axios.post('http://localhost:5000/api/voting/initiate-vote', {}, {
-          headers: { 'x-auth-token': token }
-        });
-        setVoteMessage(res.data.message);
-        // In a real app, we'd redirect to the voting page. For now, display the code.
-        setVerificationCode(`Your verification code is: ${res.data.verificationCode}`);
+        // The API call is now automatically authenticated by the api utility
+        await api.post('/voting/initiate-vote');
+        setVoteMessage('Success! Redirecting to the voting page...');
+        // Redirect to the separate, anonymous voting page
+        setTimeout(() => navigate('/vote'), 1500);
       } catch (error) {
         setVoteMessage(error.response ? error.response.data.message : 'An unexpected error occurred.');
       }
     }
   };
 
-  const handleLogout = () => { /* ... */ };
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  if (!user) {
+    return <p>Loading user data...</p>;
+  }
 
   return (
     <div>
-      <header>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2>Voter Homepage</h2>
         <button onClick={handleLogout}>Logout</button>
       </header>
 
-      {/* Biodata Section ... */}
+      <section>
+        <h3>My Biodata</h3>
+        <ul>
+          <li><strong>Name:</strong> {user.name}</li>
+          <li><strong>Registration Number:</strong> {user.regNumber}</li>
+          <li><strong>Phone Number:</strong> {user.phoneNumber}</li>
+          <li><strong>Class:</strong> {user.classLevel}</li>
+          <li><strong>Email:</strong> {user.email}</li>
+          <li><strong>Gender:</strong> {user.gender}</li>
+          <li><strong>Age:</strong> {user.age}</li>
+        </ul>
+      </section>
 
       <section>
         <h3>Election Status</h3>
         <p>{timeLeft}</p>
-        {isVotingOpen && (
+        {isVotingOpen && !user.hasVoted && (
           <button
             onClick={handleVoteClick}
-            style={{ backgroundColor: 'brightgreen', color: 'white', padding: '15px 30px', fontSize: '1.2em', border: 'none', cursor: 'pointer' }}
+            style={{ backgroundColor: 'green', color: 'white', padding: '15px 30px', fontSize: '1.2em', border: 'none', cursor: 'pointer' }}
           >
             VOTE
           </button>
         )}
+        {user.hasVoted && <p><strong>You have already voted. Thank you for your participation.</strong></p>}
         {voteMessage && <p>{voteMessage}</p>}
-        {verificationCode && <strong>{verificationCode}</strong>}
       </section>
     </div>
   );
