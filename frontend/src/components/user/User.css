@@ -1,0 +1,142 @@
+/* User-Facing Pages Styles - White and Light Blue Theme */
+
+:root {
+  --primary-blue: #2196f3; /* A nice, standard blue */
+  --light-blue-bg: #e3f2fd; /* Very light blue background */
+  --dark-blue-text: #0d47a1; /* Dark blue for headings */
+  --text-color: #333;
+  --white: #ffffff;
+  --border-color: #bbdefb; /* Light blue border */
+}
+
+.user-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px 40px;
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  color: var(--text-color);
+}
+
+.user-container h2 {
+  text-align: center;
+  color: var(--dark-blue-text);
+  border-bottom: 2px solid var(--light-blue-bg);
+  padding-bottom: 10px;
+  margin-bottom: 25px;
+}
+
+.user-container p {
+    line-height: 1.6;
+}
+
+.user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.user-form div {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-form label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #1976d2;
+}
+
+.user-form input[type="email"],
+.user-form input[type="password"],
+.user-form input[type="text"],
+.user-form input[type="tel"],
+.user-form input[type="number"],
+.user-form select {
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1em;
+}
+
+.user-form button {
+  background-color: var(--primary-blue);
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.user-form button:hover {
+  background-color: var(--dark-blue-text);
+}
+
+.user-message {
+    text-align: center;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+/* Homepage specific styles */
+.homepage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--light-blue-bg);
+    padding-bottom: 10px;
+    margin-bottom: 25px;
+}
+.homepage-header h2 {
+    border-bottom: none;
+    margin: 0;
+    padding: 0;
+}
+.homepage-header button {
+    background-color: #f44336; /* Red for logout */
+    padding: 8px 15px;
+    font-size: 1em;
+}
+.homepage-header button:hover {
+    background-color: #d32f2f;
+}
+
+.user-section {
+    margin-bottom: 30px;
+}
+
+.user-section h3 {
+    color: #1976d2;
+    border-bottom: 1px solid #e3f2fd;
+    padding-bottom: 5px;
+}
+
+.user-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.user-section li {
+    padding: 8px 0;
+}
+
+.vote-button {
+    background-color: #4caf50 !important; /* Bright Green */
+    color: white !important;
+    padding: 15px 30px !important;
+    font-size: 1.2em !important;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+.vote-button:hover {
+    background-color: #388e3c !important;
+}
