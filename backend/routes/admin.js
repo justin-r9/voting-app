@@ -5,45 +5,35 @@ const EligibleVoter = require('../models/EligibleVoter');
 const Candidate = require('../models/Candidate');
 const ElectionSettings = require('../models/ElectionSettings');
 const Vote = require('../models/Vote');
-const mongoose = require('mongoose');
+const auth = require('../middleware/auth');
+const adminAuth = require('../middleware/adminAuth');
 
-// Configure multer for in-memory file storage
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// ... (voter upload, candidate management, and settings routes remain the same) ...
-
-// @route   POST /api/admin/upload-voters
-// @desc    Upload an Excel file of eligible voters
-// @access  Private (to be secured later)
-router.post('/upload-voters', upload.single('votersFile'), async (req, res) => {
+// --- Voter Upload ---
+router.post('/upload-voters', [auth, adminAuth, upload.single('votersFile')], async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded.' });
   }
-
   try {
     await EligibleVoter.deleteMany({});
     const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
     const data = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
-    const votersToInsert = data.slice(1).map(row => ({
-      regNumber: row[0],
-      phoneNumber: String(row[1])
-    }));
+    const votersToInsert = data.slice(1).map(row => ({ regNumber: row[0], phoneNumber: String(row[1]) }));
     await EligibleVoter.insertMany(votersToInsert);
     res.status(201).json({ message: `${votersToInsert.length} eligible voters have been successfully uploaded.` });
   } catch (error) {
-    console.error('Error uploading voters:', error);
     res.status(500).json({ message: 'An error occurred while processing the file.', error: error.message });
   }
 });
 
 // --- Candidate Management ---
-router.post('/candidates', async (req, res) => {
-  const { name, position, photoUrl } = req.body;
+router.post('/candidates', [auth, adminAuth], async (req, res) => {
   try {
-    const newCandidate = new Candidate({ name, position, photoUrl });
+    const newCandidate = new Candidate(req.body);
     await newCandidate.save();
     res.status(201).json(newCandidate);
   } catch (error) {
@@ -51,6 +41,7 @@ router.post('/candidates', async (req, res) => {
   }
 });
 
+// Public route for voting page
 router.get('/candidates', async (req, res) => {
   try {
     const candidates = await Candidate.find();
@@ -60,7 +51,7 @@ router.get('/candidates', async (req, res) => {
   }
 });
 
-router.put('/candidates/:id', async (req, res) => {
+router.put('/candidates/:id', [auth, adminAuth], async (req, res) => {
   try {
     const updatedCandidate = await Candidate.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updatedCandidate) return res.status(404).json({ message: 'Candidate not found.' });
@@ -70,7 +61,7 @@ router.put('/candidates/:id', async (req, res) => {
   }
 });
 
-router.delete('/candidates/:id', async (req, res) => {
+router.delete('/candidates/:id', [auth, adminAuth], async (req, res) => {
   try {
     const deletedCandidate = await Candidate.findByIdAndDelete(req.params.id);
     if (!deletedCandidate) return res.status(404).json({ message: 'Candidate not found.' });
@@ -81,24 +72,16 @@ router.delete('/candidates/:id', async (req, res) => {
 });
 
 // --- Election Settings ---
-router.post('/settings', async (req, res) => {
-  const { votingStartDate, votingEndDate, registrationEndDate } = req.body;
+router.post('/settings', [auth, adminAuth], async (req, res) => {
   try {
-    let settings = await ElectionSettings.findOne();
-    if (settings) {
-      settings.votingStartDate = votingStartDate;
-      settings.votingEndDate = votingEndDate;
-      settings.registrationEndDate = registrationEndDate;
-    } else {
-      settings = new ElectionSettings({ votingStartDate, votingEndDate, registrationEndDate });
-    }
-    await settings.save();
+    let settings = await ElectionSettings.findOneAndUpdate({}, req.body, { new: true, upsert: true });
     res.json(settings);
   } catch (error) {
     res.status(500).json({ message: 'Error updating election settings.', error: error.message });
   }
 });
 
+// Public route for countdown timer
 router.get('/settings', async (req, res) => {
   try {
     const settings = await ElectionSettings.findOne();
@@ -109,51 +92,32 @@ router.get('/settings', async (req, res) => {
 });
 
 // --- Results and Demographics ---
-// @route   GET /api/admin/results
-// @desc    Get election results and demographics
-// @access  Private
-router.get('/results', async (req, res) => {
+router.get('/results', [auth, adminAuth], async (req, res) => {
   try {
     const totalVotes = await Vote.countDocuments();
-
-    // Overall results
     const results = await Vote.aggregate([
-      { $group: { _id: '$candidate', count: { $sum: 1 } } },
-      { $lookup: { from: 'candidates', localField: '_id', foreignField: '_id', as: 'candidateInfo' } },
-      { $unwind: '$candidateInfo' },
-      { $project: { name: '$candidateInfo.name', position: '$candidateInfo.position', count: 1 } },
-      { $sort: { count: -1 } },
+        { $group: { _id: '$candidate', count: { $sum: 1 } } },
+        { $lookup: { from: 'candidates', localField: '_id', foreignField: '_id', as: 'candidateInfo' } },
+        { $unwind: '$candidateInfo' },
+        { $project: { name: '$candidateInfo.name', position: '$candidateInfo.position', count: 1 } },
+        { $sort: { count: -1 } },
     ]);
-
-    // Demographics by class level
     const demographicsByClass = await Vote.aggregate([
-      { $group: { _id: { candidate: '$candidate', classLevel: '$classLevel' }, count: { $sum: 1 } } },
-      { $lookup: { from: 'candidates', localField: '_id.candidate', foreignField: '_id', as: 'candidateInfo' } },
-      { $unwind: '$candidateInfo' },
-      { $project: { name: '$candidateInfo.name', classLevel: '$_id.classLevel', count: 1 } },
+        { $group: { _id: { candidate: '$candidate', classLevel: '$classLevel' }, count: { $sum: 1 } } },
+        { $lookup: { from: 'candidates', localField: '_id.candidate', foreignField: '_id', as: 'candidateInfo' } },
+        { $unwind: '$candidateInfo' },
+        { $project: { name: '$candidateInfo.name', classLevel: '$_id.classLevel', count: 1 } },
     ]);
-
-    // Demographics by gender
     const demographicsByGender = await Vote.aggregate([
-      { $group: { _id: { candidate: '$candidate', gender: '$gender' }, count: { $sum: 1 } } },
-      { $lookup: { from: 'candidates', localField: '_id.candidate', foreignField: '_id', as: 'candidateInfo' } },
-      { $unwind: '$candidateInfo' },
-      { $project: { name: '$candidateInfo.name', gender: '$_id.gender', count: 1 } },
+        { $group: { _id: { candidate: '$candidate', gender: '$gender' }, count: { $sum: 1 } } },
+        { $lookup: { from: 'candidates', localField: '_id.candidate', foreignField: '_id', as: 'candidateInfo' } },
+        { $unwind: '$candidateInfo' },
+        { $project: { name: '$candidateInfo.name', gender: '$_id.gender', count: 1 } },
     ]);
-
-    res.json({
-      totalVotes,
-      results,
-      demographics: {
-        byClass: demographicsByClass,
-        byGender: demographicsByGender,
-      },
-    });
+    res.json({ totalVotes, results, demographics: { byClass: demographicsByClass, byGender: demographicsByGender } });
   } catch (error) {
-    console.error('Error fetching results:', error);
     res.status(500).json({ message: 'Server error while fetching results.', error: error.message });
   }
 });
-
 
 module.exports = router;

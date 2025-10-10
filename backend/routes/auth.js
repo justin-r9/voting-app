@@ -3,6 +3,24 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const EligibleVoter = require('../models/EligibleVoter');
+const auth = require('../middleware/auth'); // Import auth middleware
+
+// @route   GET /api/auth/me
+// @desc    Get current user's data
+// @access  Private
+router.get('/me', auth, async (req, res) => {
+  try {
+    // req.user.id is attached by the auth middleware
+    const user = await User.findById(req.user.id).select('-password'); // Exclude password from response
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 // @route   POST /api/auth/register
 // @desc    Register a new user
@@ -16,15 +34,16 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'This user is not registered to vote. Contact the admin.' });
     }
 
-    let user = await User.findOne({ $or: [{ email }, { regNumber }] });
-    if (user) {
+    let existingUser = await User.findOne({ $or: [{ email }, { regNumber }] });
+    if (existingUser) {
       return res.status(400).json({ message: 'A user with this email or registration number already exists.' });
     }
 
+    const isFirstUser = (await User.countDocuments()) === 0;
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    user = new User({
+    const user = new User({
       email,
       password: hashedPassword,
       name,
@@ -32,24 +51,17 @@ router.post('/register', async (req, res) => {
       phoneNumber,
       classLevel,
       gender,
-      age
+      age,
+      isAdmin: isFirstUser,
     });
 
     await user.save();
 
-    // TODO: Send WhatsApp verification code
-
-    const payload = { user: { id: user.id } };
-
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: '5h' },
-      (err, token) => {
-        if (err) throw err;
-        res.status(201).json({ token });
-      }
-    );
+    const payload = { user: { id: user.id, isAdmin: user.isAdmin } };
+    jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '5h' }, (err, token) => {
+      if (err) throw err;
+      res.status(201).json({ token });
+    });
 
   } catch (error) {
     console.error('Registration error:', error);
@@ -64,36 +76,21 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // 1. Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials.' });
     }
 
-    // 2. Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials.' });
     }
 
-    // 3. Generate and return JWT token
-    const payload = {
-      user: {
-        id: user.id,
-        name: user.name,
-        regNumber: user.regNumber
-      }
-    };
-
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: '5h' },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
+    const payload = { user: { id: user.id, isAdmin: user.isAdmin } };
+    jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '5h' }, (err, token) => {
+      if (err) throw err;
+      res.json({ token });
+    });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Server error during login.' });

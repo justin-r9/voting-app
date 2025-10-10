@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5000/api/admin/candidates';
+import api from '../../utils/api'; // Import the centralized api utility
 
 const CandidateManager = () => {
   const [candidates, setCandidates] = useState([]);
@@ -9,14 +7,14 @@ const CandidateManager = () => {
   const [editingId, setEditingId] = useState(null);
   const [message, setMessage] = useState('');
 
-  // Fetch all candidates on component mount
   useEffect(() => {
     fetchCandidates();
   }, []);
 
   const fetchCandidates = async () => {
     try {
-      const res = await axios.get(API_URL); // TODO: Add auth token
+      // Use the new api utility. The GET request for candidates is public.
+      const res = await api.get('/admin/candidates');
       setCandidates(res.data);
     } catch (error) {
       handleApiError(error, 'Failed to fetch candidates.');
@@ -37,11 +35,11 @@ const CandidateManager = () => {
     try {
       if (editingId) {
         // Update existing candidate
-        await axios.put(`${API_URL}/${editingId}`, formData); // TODO: Add auth token
+        await api.put(`/admin/candidates/${editingId}`, formData);
         setMessage('Candidate updated successfully.');
       } else {
         // Create new candidate
-        await axios.post(API_URL, formData); // TODO: Add auth token
+        await api.post('/admin/candidates', formData);
         setMessage('Candidate created successfully.');
       }
       resetForm();
@@ -60,7 +58,7 @@ const CandidateManager = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this candidate?')) {
       try {
-        await axios.delete(`${API_URL}/${id}`); // TODO: Add auth token
+        await api.delete(`/admin/candidates/${id}`);
         setMessage('Candidate deleted successfully.');
         fetchCandidates();
       } catch (error) {

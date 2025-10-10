@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5000/api/auth/register';
+import { useNavigate } from 'react-router-dom';
+import api from '../../utils/api'; // Import the centralized api utility
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +14,7 @@ const Register = () => {
     age: '',
   });
   const [message, setMessage] = useState('');
+  const navigate = useNavigate(); // Hook for navigation
 
   const { email, password, name, regNumber, phoneNumber, classLevel, gender, age } = formData;
 
@@ -24,16 +24,25 @@ const Register = () => {
     e.preventDefault();
     setMessage('');
     try {
-      const res = await axios.post(API_URL, formData);
-      // TODO: Handle successful registration, e.g., store token, redirect
-      setMessage('Registration successful! Please check your WhatsApp for a verification code.');
-      console.log('Token:', res.data.token);
+      // Use the new api utility
+      const res = await api.post('/auth/register', formData);
+
+      // 1. Store the token in localStorage
+      localStorage.setItem('token', res.data.token);
+
+      setMessage('Registration successful! Redirecting...');
+
+      // 2. Redirect to the homepage
+      setTimeout(() => navigate('/'), 1000);
+
     } catch (error) {
       if (error.response) {
         setMessage(`Error: ${error.response.data.message}`);
       } else {
         setMessage('An unexpected error occurred. Please try again.');
       }
+      // Clear token if registration fails
+      localStorage.removeItem('token');
       console.error('Registration Error:', error);
     }
   };
