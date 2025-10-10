@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
+import './User.css'; // Import the new CSS file
 
 const UserHomepage = () => {
   const [user, setUser] = useState(null);
@@ -10,27 +11,23 @@ const UserHomepage = () => {
   const [voteMessage, setVoteMessage] = useState('');
   const navigate = useNavigate();
 
+  // Effect to fetch initial data
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        // Fetch user data from the new protected endpoint
         const userRes = await api.get('/auth/me');
         setUser(userRes.data);
-
-        // Fetch election settings
         const settingsRes = await api.get('/admin/settings');
         setElectionSettings(settingsRes.data);
       } catch (error) {
         console.error('Failed to fetch initial data:', error);
-        // If we fail to get user data, it likely means the token is invalid or expired.
-        // Log the user out.
         handleLogout();
       }
     };
     fetchInitialData();
   }, []);
 
-  // Countdown and voting status logic
+  // Effect for countdown timer
   useEffect(() => {
     const { votingStartDate, votingEndDate } = electionSettings;
     if (!votingStartDate || !votingEndDate) return;
@@ -42,11 +39,7 @@ const UserHomepage = () => {
 
       if (now < start) {
         const diff = start - now;
-        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const m = Math.floor((diff / 1000 / 60) % 60);
-        const s = Math.floor((diff / 1000) % 60);
-        setTimeLeft(`${d}d ${h}h ${m}m ${s}s`);
+        setTimeLeft(`${Math.floor(diff / (1000 * 60 * 60 * 24))}d ${Math.floor((diff / (1000 * 60 * 60)) % 24)}h ${Math.floor((diff / 1000 / 60) % 60)}m ${Math.floor((diff / 1000) % 60)}s`);
         setIsVotingOpen(false);
       } else if (now >= start && now <= end) {
         setTimeLeft('Voting is now open!');
@@ -64,10 +57,8 @@ const UserHomepage = () => {
   const handleVoteClick = async () => {
     if (window.confirm('You are about to proceed to vote. You cannot go back after this step. Do you want to continue?')) {
       try {
-        // The API call is now automatically authenticated by the api utility
         await api.post('/voting/initiate-vote');
         setVoteMessage('Success! Redirecting to the voting page...');
-        // Redirect to the separate, anonymous voting page
         setTimeout(() => navigate('/vote'), 1500);
       } catch (error) {
         setVoteMessage(error.response ? error.response.data.message : 'An unexpected error occurred.');
@@ -81,17 +72,21 @@ const UserHomepage = () => {
   };
 
   if (!user) {
-    return <p>Loading user data...</p>;
+    return (
+        <div className="user-container">
+            <p>Loading user data...</p>
+        </div>
+    );
   }
 
   return (
-    <div>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className="user-container">
+      <header className="homepage-header">
         <h2>Voter Homepage</h2>
         <button onClick={handleLogout}>Logout</button>
       </header>
 
-      <section>
+      <section className="user-section">
         <h3>My Biodata</h3>
         <ul>
           <li><strong>Name:</strong> {user.name}</li>
@@ -104,19 +99,16 @@ const UserHomepage = () => {
         </ul>
       </section>
 
-      <section>
+      <section className="user-section">
         <h3>Election Status</h3>
         <p>{timeLeft}</p>
         {isVotingOpen && !user.hasVoted && (
-          <button
-            onClick={handleVoteClick}
-            style={{ backgroundColor: 'green', color: 'white', padding: '15px 30px', fontSize: '1.2em', border: 'none', cursor: 'pointer' }}
-          >
+          <button onClick={handleVoteClick} className="vote-button">
             VOTE
           </button>
         )}
         {user.hasVoted && <p><strong>You have already voted. Thank you for your participation.</strong></p>}
-        {voteMessage && <p>{voteMessage}</p>}
+        {voteMessage && <p className="user-message">{voteMessage}</p>}
       </section>
     </div>
   );

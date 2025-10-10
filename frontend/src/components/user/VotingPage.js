@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../utils/api'; // Import the centralized api utility
+import api from '../../utils/api';
+import './User.css'; // Import the new CSS file
 
 const VotingPage = () => {
   const [candidates, setCandidates] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState('');
   const [code, setCode] = useState('');
   const [message, setMessage] = useState('');
+  const [isVoteCasted, setIsVoteCasted] = useState(false);
 
   // Fetch candidates when the component loads
   useEffect(() => {
     const fetchCandidates = async () => {
       try {
-        // Use the new api utility. This endpoint is public.
         const res = await api.get('/admin/candidates');
         setCandidates(res.data);
       } catch (error) {
@@ -30,14 +31,12 @@ const VotingPage = () => {
     }
 
     try {
-      // Use the new api utility. This endpoint is public.
       const res = await api.post('/voting/cast-vote', {
         code,
         candidateId: selectedCandidate,
       });
       setMessage(res.data.message);
-      // Disable the form after a successful vote
-      e.target.elements.submitButton.disabled = true;
+      setIsVoteCasted(true); // Disable form after successful vote
     } catch (error) {
       setMessage(error.response ? error.response.data.message : 'An unexpected error occurred.');
       console.error('Error casting vote:', error);
@@ -45,20 +44,21 @@ const VotingPage = () => {
   };
 
   return (
-    <div>
-      <h2>Cast Your Vote</h2>
-      <p>Enter the 6-character verification code sent to your WhatsApp and select your preferred candidate.</p>
+    <div className="user-container">
+      <h2>Cast Your Anonymous Vote</h2>
+      <p>Enter the 6-character verification code sent to your WhatsApp and select your preferred candidate. This action is final.</p>
 
-      <form onSubmit={handleSubmit}>
+      <form className="user-form" onSubmit={handleSubmit}>
         <div>
-          <label>Verification Code:</label>
+          <label>Verification Code</label>
           <input
             type="text"
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             maxLength="6"
+            placeholder="Enter your 6-character code"
             required
-            style={{ marginLeft: '10px' }}
+            disabled={isVoteCasted}
           />
         </div>
 
@@ -66,7 +66,7 @@ const VotingPage = () => {
           <h3>Candidates</h3>
           {candidates.length > 0 ? (
             candidates.map((candidate) => (
-              <div key={candidate._id}>
+              <div key={candidate._id} style={{ marginBottom: '10px' }}>
                 <input
                   type="radio"
                   name="candidate"
@@ -74,6 +74,8 @@ const VotingPage = () => {
                   value={candidate._id}
                   onChange={(e) => setSelectedCandidate(e.target.value)}
                   required
+                  disabled={isVoteCasted}
+                  style={{ marginRight: '10px' }}
                 />
                 <label htmlFor={candidate._id}>{candidate.name} - {candidate.position}</label>
               </div>
@@ -83,12 +85,12 @@ const VotingPage = () => {
           )}
         </div>
 
-        <button type="submit" name="submitButton" style={{ marginTop: '20px' }}>
-          Cast Final Vote
+        <button type="submit" name="submitButton" disabled={isVoteCasted}>
+          {isVoteCasted ? 'Vote Cast' : 'Cast Final Vote'}
         </button>
       </form>
 
-      {message && <p style={{ marginTop: '20px', fontWeight: 'bold' }}>{message}</p>}
+      {message && <p className="user-message">{message}</p>}
     </div>
   );
 };
