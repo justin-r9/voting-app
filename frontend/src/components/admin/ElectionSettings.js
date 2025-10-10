@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import api from '../../utils/api'; // Import the centralized api utility
+import React, { useState, useEffect, useCallback } from 'react';
+import api from '../../utils/api';
 
 const ElectionSettings = () => {
   const [settings, setSettings] = useState({
@@ -9,25 +9,34 @@ const ElectionSettings = () => {
   });
   const [message, setMessage] = useState('');
 
-  useEffect(() => {
-    fetchSettings();
+  const handleApiError = useCallback((error, defaultMessage) => {
+    if (error.response) {
+      setMessage(`Error: ${error.response.data.message}`);
+    } else {
+      setMessage(`An unexpected error occurred: ${defaultMessage}`);
+    }
+    console.error('API Error:', error);
   }, []);
 
-  const fetchSettings = async () => {
+  const fetchSettings = useCallback(async () => {
     try {
-      // Use the new api utility. This GET request is public.
       const res = await api.get('/admin/settings');
-      // Format dates for input[type=datetime-local]
-      const formattedSettings = {
-        votingStartDate: res.data.votingStartDate ? new Date(res.data.votingStartDate).toISOString().slice(0, 16) : '',
-        votingEndDate: res.data.votingEndDate ? new Date(res.data.votingEndDate).toISOString().slice(0, 16) : '',
-        registrationEndDate: res.data.registrationEndDate ? new Date(res.data.registrationEndDate).toISOString().slice(0, 16) : '',
-      };
-      setSettings(formattedSettings);
+      if (res.data && Object.keys(res.data).length > 0) {
+        const formattedSettings = {
+          votingStartDate: res.data.votingStartDate ? new Date(res.data.votingStartDate).toISOString().slice(0, 16) : '',
+          votingEndDate: res.data.votingEndDate ? new Date(res.data.votingEndDate).toISOString().slice(0, 16) : '',
+          registrationEndDate: res.data.registrationEndDate ? new Date(res.data.registrationEndDate).toISOString().slice(0, 16) : '',
+        };
+        setSettings(formattedSettings);
+      }
     } catch (error) {
       handleApiError(error, 'Failed to fetch settings.');
     }
-  };
+  }, [handleApiError]);
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
 
   const handleInputChange = (e) => {
     setSettings({ ...settings, [e.target.name]: e.target.value });
@@ -36,7 +45,6 @@ const ElectionSettings = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Use the new api utility. Auth token will be sent automatically.
       await api.post('/admin/settings', settings);
       setMessage('Settings saved successfully.');
     } catch (error) {
@@ -44,18 +52,8 @@ const ElectionSettings = () => {
     }
   };
 
-  const handleApiError = (error, defaultMessage) => {
-    if (error.response) {
-      setMessage(`Error: ${error.response.data.message}`);
-    } else {
-      setMessage(`An unexpected error occurred: ${defaultMessage}`);
-    }
-    console.error('API Error:', error);
-  };
-
   return (
     <div>
-      <h3>Election Settings</h3>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Registration End Date:</label>

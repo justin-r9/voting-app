@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
-import './User.css'; // Import the new CSS file
+import './User.css';
 
 const UserHomepage = () => {
   const [user, setUser] = useState(null);
@@ -11,7 +11,11 @@ const UserHomepage = () => {
   const [voteMessage, setVoteMessage] = useState('');
   const navigate = useNavigate();
 
-  // Effect to fetch initial data
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  }, [navigate]);
+
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -25,9 +29,8 @@ const UserHomepage = () => {
       }
     };
     fetchInitialData();
-  }, []);
+  }, [handleLogout]);
 
-  // Effect for countdown timer
   useEffect(() => {
     const { votingStartDate, votingEndDate } = electionSettings;
     if (!votingStartDate || !votingEndDate) return;
@@ -39,7 +42,11 @@ const UserHomepage = () => {
 
       if (now < start) {
         const diff = start - now;
-        setTimeLeft(`${Math.floor(diff / (1000 * 60 * 60 * 24))}d ${Math.floor((diff / (1000 * 60 * 60)) % 24)}h ${Math.floor((diff / 1000 / 60) % 60)}m ${Math.floor((diff / 1000) % 60)}s`);
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / 1000 / 60) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        setTimeLeft(`${d}d ${h}h ${m}m ${s}s`);
         setIsVotingOpen(false);
       } else if (now >= start && now <= end) {
         setTimeLeft('Voting is now open!');
@@ -66,16 +73,11 @@ const UserHomepage = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
-  };
-
   if (!user) {
     return (
-        <div className="user-container">
-            <p>Loading user data...</p>
-        </div>
+      <div className="user-container">
+        <p>Loading user data...</p>
+      </div>
     );
   }
 

@@ -1,88 +1,104 @@
-/* User-Facing Pages Styles - White and Light Blue Theme */
+/* User-Facing Pages Styles - Refined White and Light Blue Theme */
 
 :root {
-  --primary-blue: #2196f3; /* A nice, standard blue */
-  --light-blue-bg: #e3f2fd; /* Very light blue background */
-  --dark-blue-text: #0d47a1; /* Dark blue for headings */
+  --primary-blue: #1976d2;
+  --light-blue-bg: #e3f2fd;
+  --dark-blue-text: #0d47a1;
   --text-color: #333;
   --white: #ffffff;
-  --border-color: #bbdefb; /* Light blue border */
+  --border-color: #bbdefb;
+  --success-green: #4CAF50;
+  --error-red: #f44336;
 }
 
 .user-container {
   max-width: 800px;
   margin: 40px auto;
-  padding: 20px 40px;
+  padding: 30px 50px;
   background-color: var(--white);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: var(--text-color);
 }
 
 .user-container h2 {
   text-align: center;
   color: var(--dark-blue-text);
-  border-bottom: 2px solid var(--light-blue-bg);
-  padding-bottom: 10px;
-  margin-bottom: 25px;
+  border-bottom: 1px solid var(--light-blue-bg);
+  padding-bottom: 15px;
+  margin-bottom: 30px;
+  font-weight: 300;
+  font-size: 2em;
 }
 
 .user-container p {
-    line-height: 1.6;
+    line-height: 1.7;
+    color: #555;
 }
 
 .user-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
 }
 
-.user-form div {
+.user-form > div {
   display: flex;
   flex-direction: column;
 }
 
 .user-form label {
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #1976d2;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--primary-blue);
 }
 
-.user-form input[type="email"],
-.user-form input[type="password"],
-.user-form input[type="text"],
-.user-form input[type="tel"],
-.user-form input[type="number"],
+.user-form input,
 .user-form select {
   padding: 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
   font-size: 1em;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+.user-form input:focus,
+.user-form select:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+}
+
+
 .user-form button {
-  background-color: var(--primary-blue);
+  background: linear-gradient(45deg, var(--primary-blue), #42a5f5);
   color: white;
-  padding: 12px 20px;
+  padding: 14px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
   font-size: 1.1em;
   text-transform: uppercase;
   margin-top: 10px;
-  transition: background-color 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .user-form button:hover {
-  background-color: var(--dark-blue-text);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .user-message {
     text-align: center;
     margin-top: 20px;
-    font-weight: bold;
+    font-weight: 500;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: var(--light-blue-bg);
+    border: 1px solid var(--border-color);
 }
 
 /* Homepage specific styles */
@@ -90,7 +106,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid var(--light-blue-bg);
     padding-bottom: 10px;
     margin-bottom: 25px;
 }
@@ -100,9 +115,14 @@
     padding: 0;
 }
 .homepage-header button {
-    background-color: #f44336; /* Red for logout */
-    padding: 8px 15px;
+    background-color: var(--error-red);
+    padding: 10px 18px;
     font-size: 1em;
+    border-radius: 5px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 .homepage-header button:hover {
     background-color: #d32f2f;
@@ -113,9 +133,10 @@
 }
 
 .user-section h3 {
-    color: #1976d2;
+    color: var(--primary-blue);
     border-bottom: 1px solid #e3f2fd;
-    padding-bottom: 5px;
+    padding-bottom: 8px;
+    font-weight: 500;
 }
 
 .user-section ul {
@@ -124,11 +145,15 @@
 }
 
 .user-section li {
-    padding: 8px 0;
+    padding: 10px 5px;
+    border-bottom: 1px solid #f5f5f5;
+}
+.user-section li:last-child {
+    border-bottom: none;
 }
 
 .vote-button {
-    background-color: #4caf50 !important; /* Bright Green */
+    background: linear-gradient(45deg, #4caf50, #66bb6a) !important;
     color: white !important;
     padding: 15px 30px !important;
     font-size: 1.2em !important;
@@ -136,7 +161,10 @@
     border-radius: 5px;
     cursor: pointer;
     text-transform: uppercase;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
 }
 .vote-button:hover {
-    background-color: #388e3c !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
 }

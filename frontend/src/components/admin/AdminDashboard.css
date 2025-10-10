@@ -1,63 +1,83 @@
-/* Admin Dashboard Styles - Light Green and White Theme */
+/* Admin Dashboard Styles - Refined Light Green and White Theme */
+
+:root {
+  --admin-primary-green: #2e7d32;
+  --admin-light-green-bg: #e8f5e9;
+  --admin-dark-green-text: #1b5e20;
+  --admin-white: #ffffff;
+  --admin-border-color: #a5d6a7;
+}
 
 .admin-dashboard-container {
-  padding: 20px;
-  background-color: #f0f7f0; /* Very light green background */
-  font-family: Arial, sans-serif;
+  padding: 20px 40px;
+  background-color: #f1f8e9; /* Even lighter green background for subtlety */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
 }
 
 .admin-dashboard-container h1 {
   text-align: center;
   margin-bottom: 40px;
-  color: #004d00; /* Dark green */
+  color: var(--admin-dark-green-text);
+  font-weight: 300;
+  font-size: 2.5em;
 }
 
 .admin-section {
-  background-color: #ffffff; /* White */
-  border: 1px solid #c8e6c9; /* Light green border */
+  background-color: var(--admin-white);
+  border: 1px solid var(--admin-border-color);
   border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 25px;
+  margin-bottom: 35px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.admin-section:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .admin-section h2 {
-  border-bottom: 2px solid #a5d6a7; /* Slightly darker green */
-  padding-bottom: 10px;
+  border-bottom: 1px solid #c8e6c9;
+  padding-bottom: 15px;
   margin-top: 0;
-  margin-bottom: 20px;
-  color: #1b5e20; /* Darker green */
+  margin-bottom: 25px;
+  color: var(--admin-primary-green);
+  font-size: 1.5em;
+  font-weight: 400;
 }
 
 .admin-section h3 {
-    color: #2e7d32;
+    color: var(--admin-primary-green);
+    font-weight: 500;
+    margin-top: 20px;
 }
 
 .admin-section button {
-    background-color: #4caf50; /* Green */
+    background-color: #4caf50;
     color: white;
-    padding: 10px 15px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
     font-size: 1em;
     margin: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .admin-section button:hover {
-    background-color: #388e3c; /* Darker green on hover */
+    background-color: #388e3c;
+    transform: translateY(-2px);
 }
 
-.admin-section input[type="text"],
-.admin-section input[type="number"],
-.admin-section input[type="file"],
-.admin-section input[type="datetime-local"] {
-    padding: 8px;
-    margin: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: calc(100% - 22px); /* Full width minus padding and border */
+.admin-section input,
+.admin-section select {
+    padding: 10px;
+    margin: 5px 0 15px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: calc(100% - 22px);
+    font-size: 1em;
 }
 
 .admin-section table {
@@ -67,12 +87,27 @@
 }
 
 .admin-section th, .admin-section td {
-    border: 1px solid #ddd;
-    padding: 8px;
+    border: 1px solid #e0e0e0;
+    padding: 12px;
     text-align: left;
 }
 
 .admin-section th {
-    background-color: #e8f5e9; /* Very light green for table headers */
-    color: #004d00;
+    background-color: var(--admin-light-green-bg);
+    color: var(--admin-dark-green-text);
+    font-weight: 600;
+}
+
+.admin-section li {
+    background: #fafafa;
+    padding: 10px;
+    border-left: 3px solid var(--admin-primary-green);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.admin-section ul {
+    list-style-type: none;
+    padding: 0;
 }
