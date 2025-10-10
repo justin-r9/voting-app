@@ -1,0 +1,84 @@
+/* Admin Login Page Styles - Dark Blue Theme */
+
+:root {
+  --admin-login-bg: #0d47a1; /* Dark Blue */
+  --admin-login-card-bg: #ffffff;
+  --admin-login-primary-text: #ffffff;
+  --admin-login-secondary-text: #e3f2fd;
+  --admin-login-button-bg: #1976d2;
+  --admin-login-button-hover-bg: #1565c0;
+}
+
+.admin-login-container {
+  background-color: var(--admin-login-bg);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.admin-login-card {
+  background-color: var(--admin-login-card-bg);
+  padding: 40px 50px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.admin-login-card h2 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-weight: 400;
+  font-size: 1.8em;
+}
+
+.admin-login-card p {
+    margin-bottom: 30px;
+    color: #666;
+}
+
+.admin-login-form div {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.admin-login-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #444;
+}
+
+.admin-login-form input {
+  width: calc(100% - 24px);
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+.admin-login-form button {
+  width: 100%;
+  padding: 14px;
+  font-size: 1.1em;
+  color: white;
+  background-color: var(--admin-login-button-bg);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.admin-login-form button:hover {
+  background-color: var(--admin-login-button-hover-bg);
+}
+
+.admin-login-message {
+    margin-top: 20px;
+    font-weight: 500;
+}

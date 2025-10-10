@@ -8,7 +8,8 @@ const eligibleVoterSchema = new Schema({
     required: true,
     unique: true,
     trim: true,
-    match: [/20\d{2}\/[A-Z]{3}\d{3}/, 'is not a valid registration number.']
+    // Corrected Regex to match format 20XX/XXXXXX where X are all numbers
+    match: [/^20\d{2}\/\d{6}$/, 'is not a valid registration number format (e.g., 2023/123456).']
   },
   phoneNumber: {
     type: String,
