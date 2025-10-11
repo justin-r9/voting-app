@@ -1,34 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
 // A simple, self-contained function to decode a JWT token without an external library.
 const simpleJwtDecode = (token) => {
   try {
-    // This decodes the payload part of the token.
     return JSON.parse(atob(token.split('.')[1]));
   } catch (e) {
-    // Return null if decoding fails
     return null;
   }
 };
 
 const UserRoute = () => {
-  const token = localStorage.getItem('token');
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
 
-  if (!token) {
-    return <Navigate to="/login" />;
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setIsAuthenticated(false);
+      return;
+    }
+
+    const decoded = simpleJwtDecode(token);
+    if (!decoded || (decoded.exp && decoded.exp * 1000 < Date.now()) || decoded.user.isAdmin) {
+      localStorage.removeItem('token');
+      setIsAuthenticated(false);
+    } else {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  if (isAuthenticated === null) {
+    // While checking authentication, render nothing or a loading spinner
+    return null;
   }
 
-  const decoded = simpleJwtDecode(token);
-
-  // Check for invalid token, expiration, or if the user IS an admin
-  if (!decoded || (decoded.exp && decoded.exp * 1000 < Date.now()) || decoded.user.isAdmin) {
-    localStorage.removeItem('token');
-    return <Navigate to="/login" />;
-  }
-
-  // If token is valid and user is a regular voter, render the nested routes
-  return <Outlet />;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 };
 
 export default UserRoute;
