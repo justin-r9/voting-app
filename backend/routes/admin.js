@@ -22,7 +22,14 @@ router.post('/upload-voters', [auth, adminAuth, upload.single('votersFile')], as
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
     const data = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
-    const votersToInsert = data.slice(1).map(row => ({ regNumber: row[0], phoneNumber: String(row[1]) }));
+
+    // Updated to handle three columns: regNumber, phoneNumber, classLevel
+    const votersToInsert = data.slice(1).map(row => ({
+      regNumber: row[0],
+      phoneNumber: String(row[1]),
+      classLevel: row[2]
+    }));
+
     await EligibleVoter.insertMany(votersToInsert);
     res.status(201).json({ message: `${votersToInsert.length} eligible voters have been successfully uploaded.` });
   } catch (error) {
