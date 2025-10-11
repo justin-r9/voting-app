@@ -8,11 +8,17 @@
   --admin-border-color: #b2dfdb;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .admin-dashboard-container {
   padding: 20px 40px;
   background-color: #eceff1;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: var(--admin-dark-text);
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .admin-header {
@@ -103,17 +109,19 @@
     background-color: var(--admin-white);
 }
 
-
 .admin-section table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    display: block;
+    overflow-x: auto; /* Make table scrollable on small screens */
 }
 
 .admin-section th, .admin-section td {
     border: 1px solid #eceff1;
     padding: 12px 15px;
     text-align: left;
+    white-space: nowrap; /* Prevent text wrapping in table cells */
 }
 
 .admin-section th {
@@ -180,4 +188,15 @@
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+  .admin-dashboard-container {
+    padding: 15px;
+  }
+  .admin-header {
+    flex-direction: column;
+    gap: 15px;
+  }
 }

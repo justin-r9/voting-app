@@ -15,6 +15,7 @@
   align-items: center;
   justify-content: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
 }
 
 .admin-login-card {
@@ -84,4 +85,11 @@
 .admin-login-message {
     margin-top: 20px;
     font-weight: 500;
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 480px) {
+    .admin-login-card {
+        padding: 30px 25px;
+    }
 }
