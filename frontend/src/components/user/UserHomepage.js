@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // Import Link
 import api from '../../utils/api';
 import './User.css';
 
@@ -85,7 +85,10 @@ const UserHomepage = () => {
     <div className="user-container">
       <header className="homepage-header">
         <h2>Voter Homepage</h2>
-        <button onClick={handleLogout}>Logout</button>
+        <div>
+            <Link to="/edit-profile" className="edit-profile-link">Edit Profile</Link>
+            <button onClick={handleLogout}>Logout</button>
+        </div>
       </header>
 
       <section className="user-section">

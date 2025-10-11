@@ -11,7 +11,7 @@ app.use(express.json());
 
 // MongoDB Connection
 const uri = process.env.MONGO_URI;
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(uri);
 const connection = mongoose.connection;
 connection.once('open', () => {
   console.log("MongoDB database connection established successfully");
@@ -21,11 +21,12 @@ connection.once('open', () => {
 const adminRoutes = require('./routes/admin');
 const authRoutes = require('./routes/auth');
 const votingRoutes = require('./routes/voting');
+const userRoutes = require('./routes/users'); // Added new user routes
 
 app.use('/api/admin', adminRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/voting', votingRoutes);
-
+app.use('/api/users', userRoutes); // Use the new user routes
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Voting App API');

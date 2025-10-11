@@ -33,9 +33,16 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'This email is reserved.' });
     }
 
-    const eligibleVoter = await EligibleVoter.findOne({ regNumber, phoneNumber });
+    // **New Stricter Validation**
+    // Check if regNumber, phoneNumber, AND classLevel all match a single document.
+    const eligibleVoter = await EligibleVoter.findOne({
+      regNumber,
+      phoneNumber,
+      classLevel
+    });
+
     if (!eligibleVoter) {
-      return res.status(400).json({ message: 'This user is not registered to vote. Contact the admin.' });
+      return res.status(400).json({ message: 'This user is not registered to vote with the provided details. Please check your registration number, phone number, and class level, then try again. Contact the admin if the issue persists.' });
     }
 
     let existingUser = await User.findOne({ $or: [{ email }, { regNumber }] });
@@ -43,7 +50,6 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'A user with this email or registration number already exists.' });
     }
 
-    // The first-user-is-admin logic is now removed.
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -56,7 +62,7 @@ router.post('/register', async (req, res) => {
       classLevel,
       gender,
       age,
-      isAdmin: false, // All registered users are voters
+      isAdmin: false,
     });
 
     await user.save();
@@ -80,20 +86,16 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // **New Admin Login Logic**
     if (email === process.env.ADMIN_EMAIL) {
       if (password === process.env.ADMIN_PASSWORD) {
-        // Credentials match the hardcoded admin credentials
         const payload = { user: { id: 'admin', isAdmin: true } };
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '5h' });
         return res.json({ token });
       } else {
-        // Email matches but password doesn't
         return res.status(400).json({ message: 'Invalid credentials.' });
       }
     }
 
-    // **Voter Login Logic**
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials.' });

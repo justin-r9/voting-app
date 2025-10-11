@@ -1,9 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
-// Layout
-import Footer from './components/layout/Footer';
-
 // Routing
 import AdminRoute from './components/routing/AdminRoute';
 import UserRoute from './components/routing/UserRoute';
@@ -15,6 +12,7 @@ import Register from './components/user/Register';
 import Login from './components/user/Login';
 import UserHomepage from './components/user/UserHomepage';
 import VotingPage from './components/user/VotingPage';
+import EditProfile from './components/user/EditProfile';
 
 import './App.css';
 
@@ -51,10 +49,12 @@ function App() {
             <Route path="/vote" element={<UserRoute />}>
                 <Route path="" element={<VotingPage />} />
             </Route>
+            <Route path="/edit-profile" element={<UserRoute />}>
+                <Route path="" element={<EditProfile />} />
+            </Route>
 
           </Routes>
         </main>
-        <Footer />
       </div>
     </Router>
   );
