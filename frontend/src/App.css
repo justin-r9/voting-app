@@ -1,44 +1,37 @@
-body {
-  margin: 0;
-  font-family: 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #f0f2f5; /* A light, neutral slate gray background */
-}
+/* src/App.css */
 
 .app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background-color: var(--background-color);
 }
 
 .main-content {
   flex-grow: 1;
-  padding: 20px;
+  padding: var(--spacing-large);
 }
 
 .main-nav {
-  background-color: #ffffff;
-  padding: 15px 40px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  background-color: var(--surface-color);
+  padding: var(--spacing-medium) var(--spacing-large);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   display: flex;
-  gap: 25px;
+  gap: var(--spacing-large);
   align-items: center;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .main-nav a {
   text-decoration: none;
-  color: #434343;
+  color: var(--secondary-color);
   font-weight: 500;
-  padding: 8px 12px;
-  border-radius: 6px;
+  padding: var(--spacing-small) 12px;
+  border-radius: var(--border-radius);
   transition: background-color 0.3s, color 0.3s;
 }
 
 .main-nav a:hover {
-  background-color: #f0f2f5;
-  color: #262626;
+  background-color: var(--background-color);
+  color: var(--primary-color);
 }

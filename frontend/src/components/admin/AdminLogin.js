@@ -42,19 +42,19 @@ const AdminLogin = () => {
         <h2>Admin Panel</h2>
         <p>Please log in to continue</p>
         <form className="admin-login-form" onSubmit={onSubmit}>
-          <div>
+          <div className="form-group">
             <label>Email Address</label>
-            <input type="email" placeholder="admin@example.com" name="email" value={email} onChange={onChange} required />
+            <input className="form-input" type="email" placeholder="admin@example.com" name="email" value={email} onChange={onChange} required />
           </div>
-          <div>
+          <div className="form-group">
             <label>Password</label>
-            <input type="password" placeholder="Your Password" name="password" value={password} onChange={onChange} required />
+            <input className="form-input" type="password" placeholder="Your Password" name="password" value={password} onChange={onChange} required />
           </div>
-          <button type="submit">Login</button>
+          <button type="submit" className="btn">Login</button>
         </form>
         {message && <p className="admin-login-message">{message}</p>}
       </div>
-       <p style={{color: 'white', marginTop: '30px'}}>Not an admin? <Link to="/login" style={{color: '#bbdefb'}}>Go to voter login</Link>.</p>
+       <p className="voter-login-link">Not an admin? <Link to="/login">Go to voter login</Link>.</p>
     </div>
   );
 };
