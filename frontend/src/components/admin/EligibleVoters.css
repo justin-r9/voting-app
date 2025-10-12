@@ -57,3 +57,8 @@
 .voters-table .btn-cancel:hover {
     background-color: var(--background-color);
 }
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
