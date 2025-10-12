@@ -1,95 +1,63 @@
-/* Admin Login Page Styles - New Teal/Gray Theme */
-
-:root {
-  --admin-login-bg: #263238; /* Dark Slate Gray */
-  --admin-login-card-bg: #ffffff;
-  --admin-login-button-bg: #00796b; /* Teal */
-  --admin-login-button-hover-bg: #00695c;
-}
+/* src/components/admin/AdminLogin.css */
 
 .admin-login-container {
-  background-color: var(--admin-login-bg);
-  height: 100vh;
+  background-color: var(--secondary-color);
+  min-height: calc(100vh - 75px); /* Adjust based on nav height */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  padding: 20px;
+  padding: var(--spacing-large);
 }
 
 .admin-login-card {
-  background-color: var(--admin-login-card-bg);
-  padding: 40px 50px;
-  border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  background-color: var(--surface-color);
+  padding: var(--spacing-large);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   text-align: center;
 }
 
 .admin-login-card h2 {
-  color: #37474f;
+  color: var(--secondary-color);
   margin-top: 0;
-  margin-bottom: 10px;
-  font-weight: 400;
+  margin-bottom: var(--spacing-small);
+  font-weight: 500;
   font-size: 1.8em;
 }
 
 .admin-login-card p {
-    margin-bottom: 30px;
-    color: #546e7a;
+  margin-bottom: var(--spacing-large);
+  color: var(--text-color-light);
 }
 
-.admin-login-form div {
-  margin-bottom: 20px;
-  text-align: left;
+.admin-login-form .form-group {
+  margin-bottom: var(--spacing-medium);
 }
 
-.admin-login-form label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #37474f;
-}
-
-.admin-login-form input {
-  width: calc(100% - 24px);
-  padding: 12px;
-  border: 1px solid #cfd8dc;
-  border-radius: 5px;
-  font-size: 1em;
-}
-
-.admin-login-form input:focus {
-    outline: none;
-    border-color: var(--admin-login-button-bg);
-}
-
-.admin-login-form button {
+.admin-login-form .form-input {
   width: 100%;
-  padding: 14px;
-  font-size: 1.1em;
-  color: white;
-  background-color: var(--admin-login-button-bg);
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  box-sizing: border-box; /* Ensures padding doesn't add to width */
 }
 
-.admin-login-form button:hover {
-  background-color: var(--admin-login-button-hover-bg);
+.admin-login-form .btn {
+  width: 100%;
+  margin-top: var(--spacing-small);
 }
 
 .admin-login-message {
-    margin-top: 20px;
-    font-weight: 500;
+  margin-top: var(--spacing-medium);
+  font-weight: 500;
+  color: var(--error-color);
 }
 
-/* --- Responsive Design --- */
-@media (max-width: 480px) {
-    .admin-login-card {
-        padding: 30px 25px;
-    }
+.admin-login-container .voter-login-link {
+  color: var(--surface-color);
+  margin-top: var(--spacing-large);
+}
+.admin-login-container .voter-login-link a {
+    color: #bbdefb; /* A light blue that contrasts with the dark bg */
+    font-weight: 600;
 }

@@ -39,12 +39,17 @@ const VoterUpload = () => {
   };
 
   return (
-    <div>
+    <div className="card">
       <h3>Upload Eligible Voters</h3>
       <p>Upload an Excel file (.xlsx) with two columns: Registration Number and Phone Number.</p>
-      <div>
-        <input type="file" accept=".xlsx" onChange={onFileChange} />
-        <button onClick={onFileUpload}>Upload</button>
+      <div className="form-group">
+        <div className="file-input-container">
+          <input type="file" id="votersFile" className="file-input" accept=".xlsx" onChange={onFileChange} />
+          <label htmlFor="votersFile" className="file-input-label">
+            {file ? file.name : 'Choose File'}
+          </label>
+        </div>
+        <button onClick={onFileUpload} className="btn" style={{ marginLeft: '1rem' }}>Upload</button>
       </div>
       {message && <p style={{ marginTop: '1rem' }}>{message}</p>}
     </div>
