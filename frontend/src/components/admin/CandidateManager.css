@@ -1,0 +1,81 @@
+/* src/components/admin/CandidateManager.css */
+
+.candidate-manager {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--spacing-large);
+}
+
+.candidate-form-container, .candidate-list-container {
+  padding: var(--spacing-medium);
+  border-radius: var(--border-radius);
+  background-color: #fcfcfc;
+  border: 1px solid var(--border-color);
+}
+
+.candidate-form h3, .candidate-list-container h3 {
+  margin-top: 0;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: var(--spacing-medium);
+}
+
+.candidate-form .form-group {
+  margin-bottom: var(--spacing-medium);
+}
+
+.candidate-form .form-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--spacing-medium);
+  margin-top: var(--spacing-medium);
+}
+
+.message {
+  margin-top: var(--spacing-medium);
+  font-weight: 500;
+}
+
+.candidate-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.candidate-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-medium) 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.candidate-item:last-child {
+  border-bottom: none;
+}
+
+.candidate-info .candidate-name {
+  font-weight: 600;
+  color: var(--secondary-color);
+}
+
+.candidate-info .candidate-position {
+  color: var(--text-color-light);
+  margin-left: var(--spacing-small);
+  font-size: 0.9em;
+}
+
+.candidate-actions {
+  display: flex;
+  gap: var(--spacing-small);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .candidate-manager {
+    grid-template-columns: 1fr;
+  }
+}

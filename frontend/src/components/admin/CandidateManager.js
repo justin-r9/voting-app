@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../utils/api';
+import './CandidateManager.css';
 
 const CandidateManager = () => {
   const [candidates, setCandidates] = useState([]);
@@ -8,12 +9,10 @@ const CandidateManager = () => {
   const [message, setMessage] = useState('');
 
   const handleApiError = useCallback((error, defaultMessage) => {
-    if (error.response) {
-      setMessage(`Error: ${error.response.data.message}`);
-    } else {
-      setMessage(`An unexpected error occurred: ${defaultMessage}`);
-    }
+    const errorMsg = error.response?.data?.message || defaultMessage;
+    setMessage(errorMsg);
     console.error('API Error:', error);
+    setTimeout(() => setMessage(''), 4000);
   }, []);
 
   const fetchCandidates = useCallback(async () => {
@@ -36,7 +35,6 @@ const CandidateManager = () => {
   const resetForm = useCallback(() => {
     setFormData({ name: '', position: '', photoUrl: '' });
     setEditingId(null);
-    setMessage('');
   }, []);
 
   const handleSubmit = useCallback(async (e) => {
@@ -55,6 +53,7 @@ const CandidateManager = () => {
       }
       resetForm();
       fetchCandidates();
+      setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       handleApiError(error, 'Failed to save candidate.');
     }
@@ -72,6 +71,7 @@ const CandidateManager = () => {
         await api.delete(`/admin/candidates/${id}`);
         setMessage('Candidate deleted successfully.');
         fetchCandidates();
+        setTimeout(() => setMessage(''), 3000);
       } catch (error) {
         handleApiError(error, 'Failed to delete candidate.');
       }
@@ -79,29 +79,47 @@ const CandidateManager = () => {
   }, [fetchCandidates, handleApiError]);
 
   return (
-    <div>
-      <h3>{editingId ? 'Edit Candidate' : 'Add New Candidate'}</h3>
-      <form onSubmit={handleSubmit}>
-        <input name="name" value={formData.name} onChange={handleInputChange} placeholder="Candidate Name" required />
-        <input name="position" value={formData.position} onChange={handleInputChange} placeholder="Position" required />
-        <input name="photoUrl" value={formData.photoUrl} onChange={handleInputChange} placeholder="Photo URL (optional)" />
-        <button type="submit">{editingId ? 'Update' : 'Create'}</button>
-        {editingId && <button type="button" onClick={resetForm}>Cancel Edit</button>}
-      </form>
-      {message && <p>{message}</p>}
-      <hr />
-      <h3>Current Candidates</h3>
-      <ul>
-        {candidates.map((candidate) => (
-          <li key={candidate._id}>
-            <span>{candidate.name} ({candidate.position})</span>
-            <div>
-              <button onClick={() => handleEdit(candidate)}>Edit</button>
-              <button onClick={() => handleDelete(candidate._id)}>Delete</button>
-            </div>
-          </li>
-        ))}
-      </ul>
+    <div className="candidate-manager">
+      <div className="candidate-form-container">
+        <h3>{editingId ? 'Edit Candidate' : 'Add New Candidate'}</h3>
+        <form onSubmit={handleSubmit} className="candidate-form">
+          <div className="form-group">
+            <label>Candidate Name</label>
+            <input className="form-input" name="name" value={formData.name} onChange={handleInputChange} placeholder="e.g., John Doe" required />
+          </div>
+          <div className="form-group">
+            <label>Position</label>
+            <input className="form-input" name="position" value={formData.position} onChange={handleInputChange} placeholder="e.g., President" required />
+          </div>
+          <div className="form-group">
+            <label>Photo URL (Optional)</label>
+            <input className="form-input" name="photoUrl" value={formData.photoUrl} onChange={handleInputChange} placeholder="https://example.com/photo.jpg" />
+          </div>
+          <div className="form-actions">
+            <button type="submit" className="btn">{editingId ? 'Update Candidate' : 'Create Candidate'}</button>
+            {editingId && <button type="button" className="btn-cancel" onClick={resetForm}>Cancel Edit</button>}
+          </div>
+        </form>
+        {message && <p className="message">{message}</p>}
+      </div>
+
+      <div className="candidate-list-container">
+        <h3>Current Candidates</h3>
+        <ul className="candidate-list">
+          {candidates.map((candidate) => (
+            <li key={candidate._id} className="candidate-item">
+              <div className="candidate-info">
+                <span className="candidate-name">{candidate.name}</span>
+                <span className="candidate-position">{candidate.position}</span>
+              </div>
+              <div className="candidate-actions">
+                <button className="btn" onClick={() => handleEdit(candidate)}>Edit</button>
+                <button className="btn-cancel" onClick={() => handleDelete(candidate._id)}>Delete</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

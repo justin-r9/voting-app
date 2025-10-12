@@ -1,0 +1,81 @@
+/* src/components/admin/ResultsDashboard.css */
+
+.results-dashboard {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-large);
+}
+
+.results-header h2 {
+  margin: 0;
+}
+
+.total-votes-card {
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-medium);
+  text-align: center;
+  margin-bottom: var(--spacing-large);
+  border: 1px solid var(--border-color);
+}
+
+.total-votes-card h4 {
+  margin: 0 0 var(--spacing-small) 0;
+  color: var(--text-color-light);
+  font-weight: 500;
+  border-bottom: none;
+  display: block;
+}
+
+.total-votes-card p {
+  margin: 0;
+  font-size: 2.5em;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.results-dashboard h4 {
+  margin-top: var(--spacing-large);
+  margin-bottom: var(--spacing-medium);
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: var(--spacing-small);
+  display: inline-block;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.results-table th,
+.results-table td {
+  padding: 12px 15px;
+  border: 1px solid var(--border-color);
+  text-align: left;
+}
+
+.results-table thead th {
+  background-color: var(--background-color);
+  font-weight: 600;
+  color: var(--secondary-color);
+}
+
+.results-table tbody tr:nth-of-type(even) {
+  background-color: #f9f9f9;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

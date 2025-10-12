@@ -150,3 +150,14 @@ a:hover {
   height: 100%;
   cursor: pointer;
 }
+
+.file-upload-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-medium);
+}
+
+.upload-message {
+  margin-top: var(--spacing-medium);
+  font-weight: 500;
+}
