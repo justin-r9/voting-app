@@ -32,7 +32,7 @@
 }
 
 .voters-table tbody tr:nth-of-type(even) {
-  background-color: #f9f9f9;
+  background-color: var(--background-color);
 }
 
 .voters-table .form-input {
