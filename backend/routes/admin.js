@@ -21,23 +21,45 @@ router.post('/upload-voters', [auth, adminAuth, upload.single('votersFile')], as
   }
 
   try {
+    const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+
+    // --- New Validation Logic ---
+    const rows = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
+    if (rows.length === 0) {
+        return res.status(400).json({ message: 'The uploaded Excel file is empty.' });
+    }
+
+    const actualHeaders = (rows[0] || []).map(h => String(h).trim());
+    const expectedHeaders = ['regNumber', 'phoneNumber', 'classLevel'];
+
+    const isValid = expectedHeaders.length === actualHeaders.length && expectedHeaders.every((value, index) => value === actualHeaders[index]);
+
+    if (!isValid) {
+        return res.status(400).json({
+            message: `Invalid Excel format. Please ensure the columns are exactly in this order: ${expectedHeaders.join(', ')}`
+        });
+    }
+    // --- End Validation Logic ---
+
+    // If validation passes, convert the sheet to JSON (using the validated first row as headers)
+    const data = xlsx.utils.sheet_to_json(worksheet);
+
     console.log('Clearing existing eligible voters...');
     await EligibleVoter.deleteMany({});
     console.log('Existing voters cleared.');
 
-    const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const data = xlsx.utils.sheet_to_json(worksheet, { header: ['regNumber', 'phoneNumber', 'classLevel'], skipHeader: true });
 
     console.log(`Found ${data.length} rows of data to process.`);
     // Log the first 5 rows to see how they are parsed
     console.log('Sample of parsed data:', data.slice(0, 5));
 
-    // Ensure phone numbers are strings
+    // Ensure correct data types and structure
     const votersToInsert = data.map(row => ({
-        ...row,
-        phoneNumber: String(row.phoneNumber)
+        regNumber: row.regNumber,
+        phoneNumber: String(row.phoneNumber),
+        classLevel: row.classLevel
     }));
 
     console.log('Inserting new voters into database...');
@@ -61,6 +83,36 @@ router.post('/upload-voters', [auth, adminAuth, upload.single('votersFile')], as
     res.status(500).json({ message: errorMessage, error: error.message });
   }
 });
+
+// --- Eligible Voter Management ---
+router.get('/eligible-voters', [auth, adminAuth], async (req, res) => {
+  try {
+    const voters = await EligibleVoter.find().sort({ regNumber: 1 });
+    res.json(voters);
+  } catch (err) {
+    console.error('Error fetching eligible voters:', err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+router.put('/eligible-voters/:id', [auth, adminAuth], async (req, res) => {
+  const { regNumber, phoneNumber, classLevel } = req.body;
+  try {
+    const updatedVoter = await EligibleVoter.findByIdAndUpdate(
+      req.params.id,
+      { $set: { regNumber, phoneNumber, classLevel } },
+      { new: true, runValidators: true }
+    );
+    if (!updatedVoter) {
+      return res.status(404).json({ message: 'Eligible voter not found.' });
+    }
+    res.json(updatedVoter);
+  } catch (err) {
+    console.error('Error updating eligible voter:', err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 
 // --- User Management (Admin) ---
 // ... (rest of the file remains the same)
