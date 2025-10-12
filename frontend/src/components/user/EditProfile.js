@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../../utils/api';
 import './User.css';
 
@@ -47,7 +47,7 @@ const EditProfile = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.put('/users/profile', { name, email, age });
+      await api.put('/users/profile', { name, email, age });
       setMessage('Profile updated successfully!');
       // Optionally update user data in a global state here
     } catch (error) {
@@ -57,7 +57,13 @@ const EditProfile = () => {
 
   return (
     <div className="user-container">
-      <h2>Edit My Profile</h2>
+      <header className="homepage-header">
+        <h2>Edit My Profile</h2>
+        <div>
+            <Link to="/" className="home-link">Home</Link>
+            <button onClick={() => navigate(-1)} className="cancel-button">Cancel</button>
+        </div>
+      </header>
       <form className="user-form" onSubmit={onSubmit}>
         <div>
           <label>Full Name</label>

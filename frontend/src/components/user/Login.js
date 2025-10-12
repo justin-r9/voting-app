@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../utils/api';
+import ElectionCountdown from './ElectionCountdown';
 import './User.css'; // Import the new CSS file
 
 const Login = () => {
@@ -36,6 +37,7 @@ const Login = () => {
 
   return (
     <div className="user-container">
+      <ElectionCountdown />
       <h2>Voter Login</h2>
       <form className="user-form" onSubmit={onSubmit}>
         <div>

@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 
 // Routing
 import AdminRoute from './components/routing/AdminRoute';
@@ -25,11 +25,23 @@ const Navigation = () => (
   </nav>
 );
 
-function App() {
+const AppContent = () => {
+  const location = useLocation();
+  const [showHeader, setShowHeader] = useState(false);
+
+  useEffect(() => {
+    // Show header only on these specific public routes
+    const publicRoutes = ['/login', '/register', '/admin-login'];
+    if (publicRoutes.includes(location.pathname)) {
+      setShowHeader(true);
+    } else {
+      setShowHeader(false);
+    }
+  }, [location]);
+
   return (
-    <Router>
       <div className="app-container">
-        <Navigation />
+        {showHeader && <Navigation />}
         <main className="main-content">
           <Routes>
             {/* Public Routes */}
@@ -56,6 +68,13 @@ function App() {
           </Routes>
         </main>
       </div>
+  );
+};
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }
