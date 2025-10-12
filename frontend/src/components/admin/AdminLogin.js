@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../utils/api';
-import './AdminLogin.css'; // Import the new, specific CSS file
+import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
+import './AdminLogin.css';
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -20,8 +21,9 @@ const AdminLogin = () => {
       const token = res.data.token;
       localStorage.setItem('token', token);
 
-      const { user } = JSON.parse(atob(token.split('.')[1]));
-      if (user && user.isAdmin) {
+      // Use the robust jwt-decode library
+      const decoded = jwtDecode(token);
+      if (decoded.user && decoded.user.isAdmin) {
         setMessage('Login successful! Redirecting to dashboard...');
         setTimeout(() => navigate('/admin'), 1000);
       } else {

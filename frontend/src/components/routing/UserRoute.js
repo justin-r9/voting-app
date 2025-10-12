@@ -1,40 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-
-// A simple, self-contained function to decode a JWT token without an external library.
-const simpleJwtDecode = (token) => {
-  try {
-    return JSON.parse(atob(token.split('.')[1]));
-  } catch (e) {
-    return null;
-  }
-};
+import { jwtDecode } from 'jwt-decode';
 
 const UserRoute = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setIsAuthenticated(false);
-      return;
-    }
-
-    const decoded = simpleJwtDecode(token);
-    if (!decoded || (decoded.exp && decoded.exp * 1000 < Date.now()) || decoded.user.isAdmin) {
-      localStorage.removeItem('token');
-      setIsAuthenticated(false);
-    } else {
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  if (isAuthenticated === null) {
-    // While checking authentication, render nothing or a loading spinner
-    return null;
+  if (!token) {
+    return <Navigate to="/login" />;
   }
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
+  try {
+    const decoded = jwtDecode(token);
+    if (decoded.exp * 1000 < Date.now() || decoded.user.isAdmin) {
+      localStorage.removeItem('token');
+      return <Navigate to="/login" />;
+    }
+  } catch (error) {
+    localStorage.removeItem('token');
+    return <Navigate to="/login" />;
+  }
+
+  return <Outlet />;
 };
 
 export default UserRoute;
