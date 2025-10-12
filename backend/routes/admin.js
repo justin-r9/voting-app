@@ -125,6 +125,20 @@ router.put('/eligible-voters/:id', [auth, adminAuth], async (req, res) => {
   }
 });
 
+router.delete('/eligible-voters/:id', [auth, adminAuth], async (req, res) => {
+  try {
+    const voter = await EligibleVoter.findById(req.params.id);
+    if (!voter) {
+      return res.status(404).json({ message: 'Eligible voter not found.' });
+    }
+    await voter.remove();
+    res.json({ message: 'Eligible voter removed.' });
+  } catch (err) {
+    console.error('Error deleting eligible voter:', err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 
 // --- Position Management ---
 router.get('/positions', [auth, adminAuth], async (req, res) => {
@@ -198,6 +212,20 @@ router.put('/users/:id', [auth, adminAuth], async (req, res) => {
         res.json(updatedUser);
     } catch (err) {
         console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.delete('/users/:id', [auth, adminAuth], async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+        await user.remove();
+        res.json({ message: 'User removed.' });
+    } catch (err) {
+        console.error('Error deleting user:', err.message);
         res.status(500).send('Server Error');
     }
 });

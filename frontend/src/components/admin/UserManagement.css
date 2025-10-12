@@ -45,6 +45,7 @@
 
 .modal-header h3 {
   margin: 0;
+  word-break: break-word;
 }
 
 .close-btn {
@@ -86,4 +87,14 @@
         transform: translateY(0);
         opacity: 1;
     }
+}
+
+@media (max-width: 600px) {
+  .modal-content {
+    padding: var(--spacing-medium);
+  }
+
+  .modal-header h3 {
+    font-size: 1.2em;
+  }
 }

@@ -58,6 +58,20 @@ const UserManagement = () => {
     }
   };
 
+  const handleDelete = async (userId) => {
+    if (window.confirm('Are you sure you want to permanently delete this user?')) {
+      try {
+        await api.delete(`/admin/users/${userId}`);
+        setMessage('User deleted successfully.');
+        fetchUsers(); // Refresh the user list
+        setTimeout(() => setMessage(''), 3000);
+      } catch (error) {
+        console.error('Failed to delete user', error);
+        setMessage('Failed to delete user.');
+      }
+    }
+  };
+
   return (
     <div className="user-management">
       <h2>Manage Registered Voters</h2>
@@ -98,6 +112,7 @@ const UserManagement = () => {
                 <td>{user.hasVoted ? 'Yes' : 'No'}</td>
                 <td>
                   <button className="btn" onClick={() => handleEditClick(user)}>Edit</button>
+                  <button className="btn btn-delete" onClick={() => handleDelete(user._id)}>Delete</button>
                 </td>
               </tr>
             ))}
