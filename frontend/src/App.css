@@ -10,9 +10,15 @@
 .main-content {
   flex-grow: 1;
   padding: var(--spacing-large);
+  padding-top: 80px; /* Add padding to offset the fixed header height */
 }
 
 .main-nav {
+  position: fixed; /* Fix the header to the top */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100; /* Ensure it stays on top of other content */
   background-color: var(--surface-color);
   padding: var(--spacing-medium) var(--spacing-large);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
