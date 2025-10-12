@@ -20,6 +20,8 @@
   display: flex;
   border-bottom: 1px solid var(--border-color);
   margin-bottom: var(--spacing-large);
+  overflow-x: auto; /* Allow horizontal scrolling on small screens */
+  white-space: nowrap; /* Prevent tabs from wrapping */
 }
 
 .admin-tabs button {

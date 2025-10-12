@@ -164,7 +164,7 @@ router.delete('/positions/:id', [auth, adminAuth], async (req, res) => {
       await Candidate.deleteMany({ position: positionId });
     }
 
-    await position.remove();
+    await Position.deleteOne({ _id: positionId });
     res.json({ message: `Position '${position.name}' and all associated candidates have been deleted.` });
   } catch (err) {
     console.error('Error deleting position:', err.message);
