@@ -49,6 +49,18 @@ const EligibleVoters = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this voter? This action cannot be undone.')) {
+      try {
+        await api.delete(`/admin/eligible-voters/${id}`);
+        setVoters(voters.filter(v => v._id !== id));
+      } catch (err) {
+        setError('Failed to delete voter. Please try again.');
+        console.error(err);
+      }
+    }
+  };
+
   if (loading) return <p>Loading eligible voters...</p>;
   if (error) return <p style={{ color: 'var(--error-color)' }}>{error}</p>;
 
@@ -87,6 +99,7 @@ const EligibleVoters = () => {
                     <td>{voter.classLevel}</td>
                     <td>
                       <button className="btn" onClick={() => handleEdit(voter)}>Edit</button>
+                      <button className="btn btn-delete" onClick={() => handleDelete(voter._id)}>Delete</button>
                     </td>
                   </>
                 )}

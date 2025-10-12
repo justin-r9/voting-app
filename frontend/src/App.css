@@ -30,7 +30,7 @@
 
 .main-nav a {
   text-decoration: none;
-  color: var(--secondary-color);
+  color: var(--text-color);
   font-weight: 500;
   padding: var(--spacing-small) 12px;
   border-radius: var(--border-radius);
@@ -38,6 +38,6 @@
 }
 
 .main-nav a:hover {
-  background-color: var(--background-color);
+  background-color: #2a3f5b; /* Slightly lighter than surface-color */
   color: var(--primary-color);
 }

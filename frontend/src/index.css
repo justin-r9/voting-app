@@ -2,16 +2,16 @@
 
 :root {
   /* Color Palette */
-  --primary-color: #00796b; /* Teal */
-  --primary-color-dark: #00695c;
-  --secondary-color: #37474f; /* Dark Slate Gray */
-  --background-color: #f4f6f8; /* Light Neutral Gray */
-  --surface-color: #ffffff;
-  --text-color: #333333;
-  --text-color-light: #666666;
-  --border-color: #e0e0e0;
-  --error-color: #d32f2f;
-  --success-color: #388e3c;
+  --primary-color: #00c4ff; /* Accent Cyan */
+  --primary-color-dark: #00a2d9;
+  --secondary-color: #ffc400; /* Accent Gold */
+  --background-color: #0a192f; /* Midnight Blue */
+  --surface-color: #1d2d44; /* Lighter Midnight Blue */
+  --text-color: #e6f1ff; /* Light Steel Blue */
+  --text-color-light: #b0c4de; /* Light Steel Blue */
+  --border-color: #3a506b;
+  --error-color: #ff4d4d;
+  --success-color: #4caf50;
 
   /* Typography */
   --font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
