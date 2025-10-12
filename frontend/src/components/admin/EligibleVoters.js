@@ -87,7 +87,7 @@ const EligibleVoters = () => {
                     <td><input className="form-input" name="regNumber" value={editingVoter.regNumber} onChange={handleChange} /></td>
                     <td><input className="form-input" name="phoneNumber" value={editingVoter.phoneNumber} onChange={handleChange} /></td>
                     <td><input className="form-input" name="classLevel" value={editingVoter.classLevel} onChange={handleChange} /></td>
-                    <td>
+                    <td className="action-buttons">
                       <button className="btn" onClick={() => handleSave(voter._id)}>Save</button>
                       <button className="btn-cancel" onClick={handleCancel}>Cancel</button>
                     </td>
@@ -97,7 +97,7 @@ const EligibleVoters = () => {
                     <td>{voter.regNumber}</td>
                     <td>{voter.phoneNumber}</td>
                     <td>{voter.classLevel}</td>
-                    <td>
+                    <td className="action-buttons">
                       <button className="btn" onClick={() => handleEdit(voter)}>Edit</button>
                       <button className="btn btn-delete" onClick={() => handleDelete(voter._id)}>Delete</button>
                     </td>

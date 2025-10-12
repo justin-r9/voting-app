@@ -110,7 +110,7 @@ const UserManagement = () => {
                 <td>{user.regNumber}</td>
                 <td>{user.classLevel}</td>
                 <td>{user.hasVoted ? 'Yes' : 'No'}</td>
-                <td>
+                <td className="action-buttons">
                   <button className="btn" onClick={() => handleEditClick(user)}>Edit</button>
                   <button className="btn btn-delete" onClick={() => handleDelete(user._id)}>Delete</button>
                 </td>
