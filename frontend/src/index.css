@@ -116,6 +116,13 @@ a:hover {
   background-color: var(--primary-color-dark);
 }
 
+.btn-danger {
+  background-color: var(--error-color);
+}
+.btn-danger:hover {
+    background-color: #b71c1c; /* A darker red for hover */
+}
+
 /* --- Custom File Upload Button --- */
 .file-input-container {
   position: relative;
