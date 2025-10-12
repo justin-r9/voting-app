@@ -65,11 +65,14 @@ router.post('/upload-voters', [auth, adminAuth, upload.single('votersFile')], as
     console.log('Sample of parsed data:', data.slice(0, 5));
 
     // Ensure correct data types and add the classLevel from the dropdown
-    const votersToInsert = data.map(row => ({
-      regNumber: row.regNumber,
-      phoneNumber: String(row.phoneNumber),
-      classLevel: classLevel // Add the selected classLevel to each record
-    }));
+    const votersToInsert = data.map(row => {
+      const phoneNumberStr = String(row.phoneNumber);
+      return {
+        regNumber: row.regNumber,
+        phoneNumber: phoneNumberStr.startsWith('+') ? phoneNumberStr : `+${phoneNumberStr}`,
+        classLevel: classLevel // Add the selected classLevel to each record
+      };
+    });
 
     console.log('Inserting new voters into database...');
     await EligibleVoter.insertMany(votersToInsert, { ordered: false });
