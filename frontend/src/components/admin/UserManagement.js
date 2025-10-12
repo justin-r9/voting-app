@@ -66,12 +66,11 @@ const UserManagement = () => {
         <label htmlFor="classFilter">Filter by Class: </label>
         <select id="classFilter" className="form-input" onChange={(e) => setFilter(e.target.value)} value={filter}>
           <option value="All">All</option>
-          <option value="JSS1">JSS1</option>
-          <option value="JSS2">JSS2</option>
-          <option value="JSS3">JSS3</option>
-          <option value="SS1">SS1</option>
-          <option value="SS2">SS2</option>
-          <option value="SS3">SS3</option>
+          <option value="200L">200L</option>
+          <option value="300L">300L</option>
+          <option value="400L">400L</option>
+          <option value="500L">500L</option>
+          <option value="600L">600L</option>
         </select>
       </div>
 
@@ -133,12 +132,11 @@ const UserManagement = () => {
               <div className="form-group">
                 <label>Class Level:</label>
                 <select className="form-input" name="classLevel" value={editingUser.classLevel} onChange={handleModalChange}>
-                  <option value="JSS1">JSS1</option>
-                  <option value="JSS2">JSS2</option>
-                  <option value="JSS3">JSS3</option>
-                  <option value="SS1">SS1</option>
-                  <option value="SS2">SS2</option>
-                  <option value="SS3">SS3</option>
+                  <option value="200L">200L</option>
+                  <option value="300L">300L</option>
+                  <option value="400L">400L</option>
+                  <option value="500L">500L</option>
+                  <option value="600L">600L</option>
                 </select>
               </div>
 

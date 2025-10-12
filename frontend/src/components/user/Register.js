@@ -72,7 +72,6 @@ const Register = () => {
         <div>
           <label>Class Level</label>
           <select name="classLevel" value={classLevel} onChange={onChange}>
-            <option value="100L">100L</option>
             <option value="200L">200L</option>
             <option value="300L">300L</option>
             <option value="400L">400L</option>

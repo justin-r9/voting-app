@@ -84,24 +84,22 @@ const ResultsDashboard = () => {
           <thead>
             <tr>
               <th>Candidate</th>
-              <th>JSS1</th>
-              <th>JSS2</th>
-              <th>JSS3</th>
-              <th>SS1</th>
-              <th>SS2</th>
-              <th>SS3</th>
+              <th>200L</th>
+              <th>300L</th>
+              <th>400L</th>
+              <th>500L</th>
+              <th>600L</th>
             </tr>
           </thead>
           <tbody>
             {Object.keys(classDemographics).map(name => (
               <tr key={name}>
                 <td>{name}</td>
-                <td>{classDemographics[name]['JSS1'] || 0}</td>
-                <td>{classDemographics[name]['JSS2'] || 0}</td>
-                <td>{classDemographics[name]['JSS3'] || 0}</td>
-                <td>{classDemographics[name]['SS1'] || 0}</td>
-                <td>{classDemographics[name]['SS2'] || 0}</td>
-                <td>{classDemographics[name]['SS3'] || 0}</td>
+                <td>{classDemographics[name]['200L'] || 0}</td>
+                <td>{classDemographics[name]['300L'] || 0}</td>
+                <td>{classDemographics[name]['400L'] || 0}</td>
+                <td>{classDemographics[name]['500L'] || 0}</td>
+                <td>{classDemographics[name]['600L'] || 0}</td>
               </tr>
             ))}
           </tbody>
