@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom'; // Import Link
 import api from '../../utils/api';
+import ElectionCountdown from './ElectionCountdown';
 import './User.css';
 
 const UserHomepage = () => {
   const [user, setUser] = useState(null);
   const [electionSettings, setElectionSettings] = useState({});
-  const [timeLeft, setTimeLeft] = useState('');
   const [isVotingOpen, setIsVotingOpen] = useState(false);
   const [voteMessage, setVoteMessage] = useState('');
   const navigate = useNavigate();
@@ -40,21 +40,10 @@ const UserHomepage = () => {
       const start = new Date(votingStartDate);
       const end = new Date(votingEndDate);
 
-      if (now < start) {
-        const diff = start - now;
-        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const m = Math.floor((diff / 1000 / 60) % 60);
-        const s = Math.floor((diff / 1000) % 60);
-        setTimeLeft(`${d}d ${h}h ${m}m ${s}s`);
-        setIsVotingOpen(false);
-      } else if (now >= start && now <= end) {
-        setTimeLeft('Voting is now open!');
+      if (now >= start && now <= end) {
         setIsVotingOpen(true);
       } else {
-        setTimeLeft('Voting has ended.');
         setIsVotingOpen(false);
-        clearInterval(timer);
       }
     }, 1000);
 
@@ -86,6 +75,7 @@ const UserHomepage = () => {
       <header className="homepage-header">
         <h2>Voter Homepage</h2>
         <div>
+            <Link to="/" className="home-link">Home</Link>
             <Link to="/edit-profile" className="edit-profile-link">Edit Profile</Link>
             <button onClick={handleLogout}>Logout</button>
         </div>
@@ -105,8 +95,7 @@ const UserHomepage = () => {
       </section>
 
       <section className="user-section">
-        <h3>Election Status</h3>
-        <p>{timeLeft}</p>
+        <ElectionCountdown />
         {isVotingOpen && !user.hasVoted && (
           <button onClick={handleVoteClick} className="vote-button">
             VOTE

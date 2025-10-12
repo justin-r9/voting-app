@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
+import ElectionCountdown from './ElectionCountdown';
 import './User.css'; // Import the new CSS file
 
 const Register = () => {
@@ -15,15 +16,32 @@ const Register = () => {
     age: '',
   });
   const [message, setMessage] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const navigate = useNavigate();
 
   const { email, password, name, regNumber, phoneNumber, classLevel, gender, age } = formData;
 
-  const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    if (name === 'phoneNumber') {
+      const phoneRegex = /^\d{10,15}$/;
+      if (!phoneRegex.test(value)) {
+        setPhoneError('Please enter a valid international phone number (e.g., 2348012345678).');
+      } else {
+        setPhoneError('');
+      }
+    }
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
+    if (phoneError) {
+      setMessage('Please fix the errors before submitting.');
+      return;
+    }
     try {
       const res = await api.post('/auth/register', formData);
       localStorage.setItem('token', res.data.token);
@@ -42,6 +60,7 @@ const Register = () => {
 
   return (
     <div className="user-container">
+      <ElectionCountdown />
       <h2>Create Your Account</h2>
       <p>Please use the phone number you are registered with. It must be able to receive WhatsApp messages.</p>
       <form className="user-form" onSubmit={onSubmit}>
@@ -63,7 +82,9 @@ const Register = () => {
         </div>
         <div>
           <label>WhatsApp Phone Number</label>
+          <p className="form-hint">Enter in international format (e.g., 2348012345678). Do not add the leading '+'.</p>
           <input type="tel" placeholder="Your WhatsApp Number" name="phoneNumber" value={phoneNumber} onChange={onChange} required />
+          {phoneError && <p className="form-error">{phoneError}</p>}
         </div>
         <div>
           <label>Age</label>
