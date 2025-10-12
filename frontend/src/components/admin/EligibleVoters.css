@@ -1,0 +1,59 @@
+/* src/components/admin/EligibleVoters.css */
+
+.eligible-voters-container h2 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-small);
+}
+.eligible-voters-container p {
+    margin-bottom: var(--spacing-large);
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.voters-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--spacing-medium);
+}
+
+.voters-table th,
+.voters-table td {
+  padding: 12px 15px;
+  border: 1px solid var(--border-color);
+  text-align: left;
+}
+
+.voters-table thead th {
+  background-color: var(--background-color);
+  font-weight: 600;
+  color: var(--secondary-color);
+}
+
+.voters-table tbody tr:nth-of-type(even) {
+  background-color: #f9f9f9;
+}
+
+.voters-table .form-input {
+    width: 95%;
+}
+
+.voters-table .btn {
+    padding: 8px 16px;
+    font-size: 0.9em;
+}
+
+.voters-table .btn-cancel {
+    background-color: transparent;
+    color: var(--text-color-light);
+    border: 1px solid var(--border-color);
+    margin-left: var(--spacing-small);
+    padding: 8px 16px;
+    font-size: 0.9em;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+.voters-table .btn-cancel:hover {
+    background-color: var(--background-color);
+}

@@ -136,7 +136,9 @@ a:hover {
 }
 
 .file-input-label:hover {
-  background-color: #e0f2f1; /* Light teal */
+  background-color: var(--primary-color);
+  color: var(--surface-color);
+  border-color: var(--primary-color-dark);
 }
 
 .file-input {
