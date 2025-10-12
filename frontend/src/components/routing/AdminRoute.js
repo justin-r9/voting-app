@@ -1,6 +1,14 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+
+// A simple, self-contained function to decode a JWT token without an external library.
+const simpleJwtDecode = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
 
 const AdminRoute = () => {
   const token = localStorage.getItem('token');
@@ -9,13 +17,9 @@ const AdminRoute = () => {
     return <Navigate to="/admin-login" />;
   }
 
-  try {
-    const decoded = jwtDecode(token);
-    if (decoded.exp * 1000 < Date.now() || !decoded.user.isAdmin) {
-      localStorage.removeItem('token');
-      return <Navigate to="/admin-login" />;
-    }
-  } catch (error) {
+  const decoded = simpleJwtDecode(token);
+
+  if (!decoded || (decoded.exp && decoded.exp * 1000 < Date.now()) || !decoded.user.isAdmin) {
     localStorage.removeItem('token');
     return <Navigate to="/admin-login" />;
   }

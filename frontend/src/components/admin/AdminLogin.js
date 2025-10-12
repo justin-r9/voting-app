@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../utils/api';
-import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
 import './AdminLogin.css';
+
+// A simple, self-contained function to decode a JWT token without an external library.
+const simpleJwtDecode = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -21,9 +29,8 @@ const AdminLogin = () => {
       const token = res.data.token;
       localStorage.setItem('token', token);
 
-      // Use the robust jwt-decode library
-      const decoded = jwtDecode(token);
-      if (decoded.user && decoded.user.isAdmin) {
+      const decoded = simpleJwtDecode(token);
+      if (decoded && decoded.user && decoded.user.isAdmin) {
         setMessage('Login successful! Redirecting to dashboard...');
         setTimeout(() => navigate('/admin'), 1000);
       } else {
