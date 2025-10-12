@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../utils/api';
+import './ElectionSettings.css';
 
 const ElectionSettings = () => {
   const [settings, setSettings] = useState({
@@ -10,22 +11,22 @@ const ElectionSettings = () => {
   const [message, setMessage] = useState('');
 
   const handleApiError = useCallback((error, defaultMessage) => {
-    if (error.response) {
-      setMessage(`Error: ${error.response.data.message}`);
-    } else {
-      setMessage(`An unexpected error occurred: ${defaultMessage}`);
-    }
+    const errorMsg = error.response?.data?.message || defaultMessage;
+    setMessage(errorMsg);
     console.error('API Error:', error);
+    setTimeout(() => setMessage(''), 4000);
   }, []);
 
   const fetchSettings = useCallback(async () => {
     try {
       const res = await api.get('/admin/settings');
       if (res.data && Object.keys(res.data).length > 0) {
+        // Format dates for datetime-local input
+        const formatForInput = (date) => date ? new Date(new Date(date).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16) : '';
         const formattedSettings = {
-          votingStartDate: res.data.votingStartDate ? new Date(res.data.votingStartDate).toISOString().slice(0, 16) : '',
-          votingEndDate: res.data.votingEndDate ? new Date(res.data.votingEndDate).toISOString().slice(0, 16) : '',
-          registrationEndDate: res.data.registrationEndDate ? new Date(res.data.registrationEndDate).toISOString().slice(0, 16) : '',
+          votingStartDate: formatForInput(res.data.votingStartDate),
+          votingEndDate: formatForInput(res.data.votingEndDate),
+          registrationEndDate: formatForInput(res.data.registrationEndDate),
         };
         setSettings(formattedSettings);
       }
@@ -47,17 +48,22 @@ const ElectionSettings = () => {
     try {
       await api.post('/admin/settings', settings);
       setMessage('Settings saved successfully.');
+      setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       handleApiError(error, 'Failed to save settings.');
     }
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Registration End Date:</label>
+    <div className="election-settings">
+      <h2>Election Timeline Settings</h2>
+      <p>Set the key dates for the election. All times are in your local timezone.</p>
+      <form onSubmit={handleSubmit} className="settings-form">
+        <div className="form-group">
+          <label htmlFor="registrationEndDate">Registration End Date:</label>
           <input
+            id="registrationEndDate"
+            className="form-input"
             type="datetime-local"
             name="registrationEndDate"
             value={settings.registrationEndDate}
@@ -65,9 +71,11 @@ const ElectionSettings = () => {
             required
           />
         </div>
-        <div>
-          <label>Voting Start Date:</label>
+        <div className="form-group">
+          <label htmlFor="votingStartDate">Voting Start Date:</label>
           <input
+            id="votingStartDate"
+            className="form-input"
             type="datetime-local"
             name="votingStartDate"
             value={settings.votingStartDate}
@@ -75,9 +83,11 @@ const ElectionSettings = () => {
             required
           />
         </div>
-        <div>
-          <label>Voting End Date:</label>
+        <div className="form-group">
+          <label htmlFor="votingEndDate">Voting End Date:</label>
           <input
+            id="votingEndDate"
+            className="form-input"
             type="datetime-local"
             name="votingEndDate"
             value={settings.votingEndDate}
@@ -85,9 +95,9 @@ const ElectionSettings = () => {
             required
           />
         </div>
-        <button type="submit">Save Settings</button>
+        <button type="submit" className="btn">Save Settings</button>
       </form>
-      {message && <p>{message}</p>}
+      {message && <p className="message">{message}</p>}
     </div>
   );
 };

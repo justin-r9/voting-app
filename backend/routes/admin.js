@@ -19,47 +19,55 @@ router.post('/upload-voters', [auth, adminAuth, upload.single('votersFile')], as
     console.log('Error: No file was uploaded.');
     return res.status(400).json({ message: 'No file uploaded.' });
   }
+  // --- New: Get classLevel from the request body ---
+  const { classLevel } = req.body;
+  if (!classLevel) {
+    return res.status(400).json({ message: 'Please select a class level.' });
+  }
 
   try {
     const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
 
-    // --- New Validation Logic ---
+    // --- Updated Validation Logic ---
     const rows = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
     if (rows.length === 0) {
-        return res.status(400).json({ message: 'The uploaded Excel file is empty.' });
+      return res.status(400).json({ message: 'The uploaded Excel file is empty.' });
     }
 
     const actualHeaders = (rows[0] || []).map(h => String(h).trim());
-    const expectedHeaders = ['regNumber', 'phoneNumber', 'classLevel'];
+    // Expect only two headers now
+    const expectedHeaders = ['regNumber', 'phoneNumber'];
 
     const isValid = expectedHeaders.length === actualHeaders.length && expectedHeaders.every((value, index) => value === actualHeaders[index]);
 
     if (!isValid) {
-        return res.status(400).json({
-            message: `Invalid Excel format. Please ensure the columns are exactly in this order: ${expectedHeaders.join(', ')}`
-        });
+      return res.status(400).json({
+        message: `Invalid Excel format. For class-specific uploads, please ensure the columns are exactly in this order: ${expectedHeaders.join(', ')}`
+      });
     }
     // --- End Validation Logic ---
 
-    // If validation passes, convert the sheet to JSON (using the validated first row as headers)
     const data = xlsx.utils.sheet_to_json(worksheet);
 
-    console.log('Clearing existing eligible voters...');
-    await EligibleVoter.deleteMany({});
-    console.log('Existing voters cleared.');
+    // --- Updated Logic: Don't clear all voters ---
+    // Instead, we will upsert based on registration number for the given class.
+    // This allows uploading files class by class without deleting others.
+    // For simplicity in this implementation, we will first remove all voters belonging to the specific class level being uploaded.
+    console.log(`Clearing existing eligible voters for class: ${classLevel}...`);
+    await EligibleVoter.deleteMany({ classLevel });
+    console.log(`Existing voters for ${classLevel} cleared.`);
 
-
-    console.log(`Found ${data.length} rows of data to process.`);
+    console.log(`Found ${data.length} rows of data to process for class ${classLevel}.`);
     // Log the first 5 rows to see how they are parsed
     console.log('Sample of parsed data:', data.slice(0, 5));
 
-    // Ensure correct data types and structure
+    // Ensure correct data types and add the classLevel from the dropdown
     const votersToInsert = data.map(row => ({
-        regNumber: row.regNumber,
-        phoneNumber: String(row.phoneNumber),
-        classLevel: row.classLevel
+      regNumber: row.regNumber,
+      phoneNumber: String(row.phoneNumber),
+      classLevel: classLevel // Add the selected classLevel to each record
     }));
 
     console.log('Inserting new voters into database...');

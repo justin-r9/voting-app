@@ -1,0 +1,23 @@
+/* src/components/admin/ElectionSettings.css */
+
+.election-settings h2 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-small);
+}
+
+.election-settings p {
+    margin-bottom: var(--spacing-large);
+}
+
+.settings-form {
+    max-width: 500px;
+}
+
+.settings-form .form-group {
+    margin-bottom: var(--spacing-large);
+}
+
+.settings-form .form-input {
+    width: 100%;
+    box-sizing: border-box;
+}
