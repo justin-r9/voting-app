@@ -6,7 +6,7 @@
   gap: var(--spacing-large);
 }
 
-.candidate-form-container, .candidate-list-container {
+.position-manager-container, .candidate-form-container, .candidate-list-container {
   padding: var(--spacing-medium);
   border-radius: var(--border-radius);
   background-color: #fcfcfc;
@@ -78,4 +78,38 @@
   .candidate-manager {
     grid-template-columns: 1fr;
   }
+}
+
+/* --- Position Manager Specific Styles --- */
+.position-form {
+  display: flex;
+  gap: var(--spacing-small);
+  margin-bottom: var(--spacing-medium);
+}
+
+.position-form .form-input {
+  flex-grow: 1;
+}
+
+.position-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.position-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-small) 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.delete-pos-btn {
+  background: none;
+  border: none;
+  color: var(--error-color);
+  cursor: pointer;
+  font-size: 1.5em;
+  line-height: 1;
 }

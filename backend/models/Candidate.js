@@ -9,9 +9,9 @@ const candidateSchema = new Schema({
     trim: true
   },
   position: {
-    type: String,
-    required: true,
-    trim: true
+    type: Schema.Types.ObjectId,
+    ref: 'Position',
+    required: true
   },
   photoUrl: {
     type: String,

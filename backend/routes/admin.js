@@ -2,6 +2,7 @@ const router = require('express').Router();
 const multer = require('multer');
 const xlsx = require('xlsx');
 const EligibleVoter = require('../models/EligibleVoter');
+const Position = require('../models/Position'); // Import the new Position model
 const Candidate = require('../models/Candidate');
 const ElectionSettings = require('../models/ElectionSettings');
 const Vote = require('../models/Vote');
@@ -122,6 +123,56 @@ router.put('/eligible-voters/:id', [auth, adminAuth], async (req, res) => {
 });
 
 
+// --- Position Management ---
+router.get('/positions', [auth, adminAuth], async (req, res) => {
+  try {
+    const positions = await Position.find().sort({ name: 1 });
+    res.json(positions);
+  } catch (err) {
+    console.error('Error fetching positions:', err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+router.post('/positions', [auth, adminAuth], async (req, res) => {
+  const { name } = req.body;
+  try {
+    const newPosition = new Position({ name });
+    await newPosition.save();
+    res.status(201).json(newPosition);
+  } catch (err) {
+    console.error('Error creating position:', err.message);
+    if (err.code === 11000) {
+      return res.status(400).json({ message: 'A position with this name already exists.' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
+
+router.delete('/positions/:id', [auth, adminAuth], async (req, res) => {
+  try {
+    const positionId = req.params.id;
+    const position = await Position.findById(positionId);
+    if (!position) {
+      return res.status(404).json({ message: 'Position not found.' });
+    }
+
+    // Cascade Delete: Find and delete all candidates with this position
+    const candidatesToDelete = await Candidate.find({ position: positionId });
+    if (candidatesToDelete.length > 0) {
+      console.log(`Deleting ${candidatesToDelete.length} candidates associated with position: ${position.name}`);
+      await Candidate.deleteMany({ position: positionId });
+    }
+
+    await position.remove();
+    res.json({ message: `Position '${position.name}' and all associated candidates have been deleted.` });
+  } catch (err) {
+    console.error('Error deleting position:', err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+
 // --- User Management (Admin) ---
 // ... (rest of the file remains the same)
 router.get('/users', [auth, adminAuth], async (req, res) => {
@@ -158,7 +209,7 @@ router.post('/candidates', [auth, adminAuth], async (req, res) => {
 });
 router.get('/candidates', async (req, res) => {
   try {
-    const candidates = await Candidate.find();
+    const candidates = await Candidate.find().populate('position', 'name');
     res.json(candidates);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching candidates.', error: error.message });

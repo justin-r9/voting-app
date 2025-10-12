@@ -3,6 +3,8 @@ import api from '../../utils/api';
 import './CandidateManager.css';
 
 const CandidateManager = () => {
+  const [positions, setPositions] = useState([]);
+  const [newPositionName, setNewPositionName] = useState('');
   const [candidates, setCandidates] = useState([]);
   const [formData, setFormData] = useState({ name: '', position: '', photoUrl: '' });
   const [editingId, setEditingId] = useState(null);
@@ -15,6 +17,15 @@ const CandidateManager = () => {
     setTimeout(() => setMessage(''), 4000);
   }, []);
 
+  const fetchPositions = useCallback(async () => {
+    try {
+      const res = await api.get('/admin/positions');
+      setPositions(res.data);
+    } catch (error) {
+      handleApiError(error, 'Failed to fetch positions.');
+    }
+  }, [handleApiError]);
+
   const fetchCandidates = useCallback(async () => {
     try {
       const res = await api.get('/admin/candidates');
@@ -26,7 +37,8 @@ const CandidateManager = () => {
 
   useEffect(() => {
     fetchCandidates();
-  }, [fetchCandidates]);
+    fetchPositions();
+  }, [fetchCandidates, fetchPositions]);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -61,7 +73,8 @@ const CandidateManager = () => {
 
   const handleEdit = useCallback((candidate) => {
     setEditingId(candidate._id);
-    setFormData({ name: candidate.name, position: candidate.position, photoUrl: candidate.photoUrl || '' });
+    // When editing, the position object is populated. We need to set the form's position value to the _id.
+    setFormData({ name: candidate.name, position: candidate.position._id, photoUrl: candidate.photoUrl || '' });
     setMessage('');
   }, []);
 
@@ -78,8 +91,54 @@ const CandidateManager = () => {
     }
   }, [fetchCandidates, handleApiError]);
 
+  const handlePositionSubmit = async (e) => {
+    e.preventDefault();
+    if (!newPositionName) return;
+    try {
+      await api.post('/admin/positions', { name: newPositionName });
+      setNewPositionName('');
+      fetchPositions();
+    } catch (error) {
+      handleApiError(error, 'Failed to create position.');
+    }
+  };
+
+  const handlePositionDelete = async (id, name) => {
+    const warning = `Warning: Deleting the position "${name}" will also remove all candidates running for this position. Are you sure you want to continue?`;
+    if (window.confirm(warning)) {
+      try {
+        await api.delete(`/admin/positions/${id}`);
+        fetchPositions();
+        fetchCandidates(); // Refresh candidates as some may have been deleted
+      } catch (error) {
+        handleApiError(error, 'Failed to delete position.');
+      }
+    }
+  };
+
   return (
     <div className="candidate-manager">
+      <div className="position-manager-container">
+        <h3>Manage Positions</h3>
+        <form onSubmit={handlePositionSubmit} className="position-form">
+          <input
+            className="form-input"
+            value={newPositionName}
+            onChange={(e) => setNewPositionName(e.target.value)}
+            placeholder="Add new position"
+          />
+          <button type="submit" className="btn">Add</button>
+        </form>
+        <ul className="position-list">
+          {positions.map(pos => (
+            <li key={pos._id}>
+              <span>{pos.name}</span>
+              <button className="delete-pos-btn" onClick={() => handlePositionDelete(pos._id, pos.name)}>&times;</button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <div className="candidate-form-container">
         <h3>{editingId ? 'Edit Candidate' : 'Add New Candidate'}</h3>
         <form onSubmit={handleSubmit} className="candidate-form">
@@ -89,7 +148,12 @@ const CandidateManager = () => {
           </div>
           <div className="form-group">
             <label>Position</label>
-            <input className="form-input" name="position" value={formData.position} onChange={handleInputChange} placeholder="e.g., President" required />
+            <select className="form-input" name="position" value={formData.position} onChange={handleInputChange} required>
+              <option value="" disabled>-- Select a Position --</option>
+              {positions.map(pos => (
+                <option key={pos._id} value={pos._id}>{pos.name}</option>
+              ))}
+            </select>
           </div>
           <div className="form-group">
             <label>Photo URL (Optional)</label>
@@ -110,11 +174,11 @@ const CandidateManager = () => {
             <li key={candidate._id} className="candidate-item">
               <div className="candidate-info">
                 <span className="candidate-name">{candidate.name}</span>
-                <span className="candidate-position">{candidate.position}</span>
+                <span className="candidate-position">{candidate.position?.name}</span>
               </div>
               <div className="candidate-actions">
                 <button className="btn" onClick={() => handleEdit(candidate)}>Edit</button>
-                <button className="btn-cancel" onClick={() => handleDelete(candidate._id)}>Delete</button>
+                <button className="btn btn-danger" onClick={() => handleDelete(candidate._id)}>Delete</button>
               </div>
             </li>
           ))}
