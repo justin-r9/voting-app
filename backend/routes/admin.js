@@ -59,7 +59,12 @@ router.post('/upload-voters', [auth, adminAuth, excelUpload.single('votersFile')
   }
 
   try {
-    const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+    let workbook;
+    try {
+      workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+    } catch (e) {
+      return res.status(400).json({ message: 'Invalid file format. Please upload a valid Excel file (.xlsx or .xls).' });
+    }
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
 
@@ -235,26 +240,38 @@ router.get('/users', [auth, adminAuth], async (req, res) => {
 });
 router.put('/users/:id', [auth, adminAuth], async (req, res) => {
     const { name, email, age, classLevel, gender, hasVoted, regNumber, phoneNumber } = req.body;
+
+    // Construct an object with all fields an admin can update
+    const updateFields = {
+        name,
+        email,
+        age,
+        classLevel,
+        gender,
+        hasVoted,
+        regNumber,
+        phoneNumber: phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`
+    };
+
     try {
-        const eligibleVoter = await EligibleVoter.findOne({
-            regNumber,
-            phoneNumber: `+${phoneNumber}`,
-            classLevel,
-            gender
-        });
-
-        if (!eligibleVoter) {
-            return res.status(400).json({ message: 'The updated details do not match any eligible voter.' });
-        }
-
+        // Find the user by ID and update with the new fields
         const updatedUser = await User.findByIdAndUpdate(
             req.params.id,
-            { $set: { name, email, age, classLevel, gender, hasVoted } },
-            { new: true }
+            { $set: updateFields },
+            { new: true, runValidators: true } // runValidators to ensure enum constraints are met
         ).select('-password');
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
         res.json(updatedUser);
     } catch (err) {
         console.error(err.message);
+        // Handle potential duplicate key errors (e.g., if regNumber is changed to one that already exists)
+        if (err.code === 11000) {
+            return res.status(400).json({ message: 'Update failed. A user with the provided Registration Number or Email already exists.' });
+        }
         res.status(500).send('Server Error');
     }
 });

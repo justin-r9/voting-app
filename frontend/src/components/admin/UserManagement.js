@@ -135,6 +135,16 @@ const UserManagement = () => {
               </div>
 
               <div className="form-group">
+                <label>Registration Number:</label>
+                <input className="form-input" type="text" name="regNumber" value={editingUser.regNumber} onChange={handleModalChange} />
+              </div>
+
+              <div className="form-group">
+                <label>Phone Number:</label>
+                <input className="form-input" type="text" name="phoneNumber" value={editingUser.phoneNumber} onChange={handleModalChange} />
+              </div>
+
+              <div className="form-group">
                 <label>Email:</label>
                 <input className="form-input" type="email" name="email" value={editingUser.email} onChange={handleModalChange} />
               </div>
