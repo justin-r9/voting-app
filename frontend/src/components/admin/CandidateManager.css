@@ -2,11 +2,16 @@
 
 .candidate-manager {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 1fr;
   gap: var(--spacing-large);
 }
 
-.position-manager-container, .candidate-form-container, .candidate-list-container {
+.position-manager-container, .candidate-form-container {
+  padding: var(--spacing-medium);
+}
+
+.candidate-list-container {
+  grid-column: 1 / -1; /* Make this span the full width of the grid */
   padding: var(--spacing-medium);
   border-radius: var(--border-radius);
   background-color: #fcfcfc;

@@ -42,7 +42,21 @@ const CandidateManager = () => {
 
   const handleInputChange = (e) => {
     if (e.target.name === 'photo') {
-      setFormData({ ...formData, photo: e.target.files[0] });
+      const file = e.target.files[0];
+      if (file) {
+        // Validate file type
+        const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+        if (!allowedTypes.includes(file.type)) {
+          setMessage('Invalid file type. Only .png, .jpg, and .jpeg are allowed.');
+          return;
+        }
+        // Validate file size (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          setMessage('File is too large. Maximum size is 5MB.');
+          return;
+        }
+      }
+      setFormData({ ...formData, photo: file });
     } else {
       setFormData({ ...formData, [e.target.name]: e.target.value });
     }
@@ -167,8 +181,11 @@ const CandidateManager = () => {
             </select>
           </div>
           <div className="form-group">
-            <label>Photo</label>
-            <input className="form-input" type="file" name="photo" onChange={handleInputChange} />
+            <label htmlFor="photo-upload" className="btn">Choose Photo</label>
+            <input id="photo-upload" type="file" name="photo" onChange={handleInputChange} style={{ display: 'none' }} />
+            <span className="file-info">
+              {formData.photo ? formData.photo.name : 'Max 5MB (.png, .jpg)'}
+            </span>
           </div>
           <div className="form-actions">
             <button type="submit" className="btn">{editingId ? 'Update Candidate' : 'Create Candidate'}</button>

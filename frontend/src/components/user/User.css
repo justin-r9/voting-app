@@ -261,3 +261,27 @@
     align-items: center;
   }
 }
+
+/* --- Tab Styles --- */
+.user-tabs {
+  margin-bottom: var(--spacing-large);
+  display: flex;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.user-tabs button {
+  padding: var(--spacing-medium);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.1em;
+  color: var(--text-color-light);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px; /* Align with the container's border */
+}
+
+.user-tabs button.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+  font-weight: 600;
+}

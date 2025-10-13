@@ -5,7 +5,7 @@ import CandidateManager from './CandidateManager';
 import ElectionSettings from './ElectionSettings';
 import ResultsDashboard from './ResultsDashboard';
 import UserManagement from './UserManagement';
-// Import new component for eligible voters (will be created in the next step)
+// Import new component for eligible voters
 import EligibleVoters from './EligibleVoters';
 import './AdminDashboard.css';
 
