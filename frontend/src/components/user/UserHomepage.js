@@ -9,6 +9,9 @@ const UserHomepage = () => {
   const [electionSettings, setElectionSettings] = useState({});
   const [isVotingOpen, setIsVotingOpen] = useState(false);
   const [voteMessage, setVoteMessage] = useState('');
+  const [candidates, setCandidates] = useState([]);
+  const [positions, setPositions] = useState([]);
+  const [viewCandidates, setViewCandidates] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = useCallback(() => {
@@ -23,6 +26,10 @@ const UserHomepage = () => {
         setUser(userRes.data);
         const settingsRes = await api.get('/admin/settings');
         setElectionSettings(settingsRes.data);
+        const candidatesRes = await api.get('/admin/candidates');
+        setCandidates(candidatesRes.data);
+        const positionsRes = await api.get('/admin/positions');
+        setPositions(positionsRes.data);
       } catch (error) {
         console.error('Failed to fetch initial data:', error);
         handleLogout();
@@ -103,6 +110,32 @@ const UserHomepage = () => {
         )}
         {user.hasVoted && <p><strong>You have already voted. Thank you for your participation.</strong></p>}
         {voteMessage && <p className="user-message">{voteMessage}</p>}
+      </section>
+
+      <section className="user-section">
+        <button className="btn" onClick={() => setViewCandidates(!viewCandidates)}>
+          {viewCandidates ? 'Hide Candidates' : 'View Candidates'}
+        </button>
+        {viewCandidates && (
+          <div className="candidate-list-container">
+            <h3>Available Candidates</h3>
+            {positions.map(position => (
+              <div key={position._id} className="position-group">
+                <h4>{position.name}</h4>
+                <ul className="candidate-list">
+                  {candidates.filter(c => c.position._id === position._id).map(candidate => (
+                    <li key={candidate._id} className="candidate-item">
+                      <img src={`/${candidate.photo}`} alt={candidate.name} className="candidate-photo" />
+                      <div className="candidate-info">
+                        <span className="candidate-name">{candidate.name}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

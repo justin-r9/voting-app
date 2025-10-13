@@ -13,9 +13,9 @@ const candidateSchema = new Schema({
     ref: 'Position',
     required: true
   },
-  photoUrl: {
+  photo: {
     type: String,
-    trim: true
+    required: true
   }
 }, {
   timestamps: true,

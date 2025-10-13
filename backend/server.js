@@ -18,6 +18,7 @@ connection.once('open', () => {
 })
 
 // API Routes
+app.use('/uploads', express.static('uploads'));
 const adminRoutes = require('./routes/admin');
 const authRoutes = require('./routes/auth');
 const votingRoutes = require('./routes/voting');
