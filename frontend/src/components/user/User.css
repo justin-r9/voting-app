@@ -22,6 +22,8 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: var(--text-color);
   animation: fadeIn 0.5s ease-in-out;
+  max-height: 90vh; /* Limit height to 90% of the viewport height */
+  overflow-y: auto; /* Add a scrollbar if content overflows */
 }
 
 .user-container h2 {
@@ -260,6 +262,14 @@
   .homepage-header {
     align-items: center;
   }
+}
+
+.btn-cancel {
+  background-color: var(--error-color) !important;
+}
+
+.btn-cancel:hover {
+  background-color: #c62828 !important; /* A darker red for hover */
 }
 
 .read-only-notice {
