@@ -77,11 +77,11 @@ const Register = () => {
           <input type="text" placeholder="Your Full Name" name="name" value={name} onChange={onChange} required />
         </div>
         <div>
-          <label>Registration Number</label>
+          <label>Registration Number <span className="read-only-notice">(this cannot be changed after registration)</span></label>
           <input type="text" placeholder="e.g., 2023/ABC123" name="regNumber" value={regNumber} onChange={onChange} required />
         </div>
         <div>
-          <label>WhatsApp Phone Number</label>
+          <label>WhatsApp Phone Number <span className="read-only-notice">(this cannot be changed after registration)</span></label>
           <p className="form-hint">Enter in international format (e.g., 2348012345678). Do not add the leading '+'.</p>
           <input type="tel" placeholder="Your WhatsApp Number" name="phoneNumber" value={phoneNumber} onChange={onChange} required />
           {phoneError && <p className="form-error">{phoneError}</p>}
@@ -91,7 +91,7 @@ const Register = () => {
           <input type="number" placeholder="Your Age" name="age" value={age} onChange={onChange} required />
         </div>
         <div>
-          <label>Class Level</label>
+          <label>Class Level <span className="read-only-notice">(this cannot be changed after registration)</span></label>
           <select name="classLevel" value={classLevel} onChange={onChange}>
             <option value="200L">200L</option>
             <option value="300L">300L</option>
@@ -101,7 +101,7 @@ const Register = () => {
           </select>
         </div>
         <div>
-          <label>Gender</label>
+          <label>Gender <span className="read-only-notice">(this cannot be changed after registration)</span></label>
           <select name="gender" value={gender} onChange={onChange}>
             <option value="Male">Male</option>
             <option value="Female">Female</option>

@@ -262,6 +262,13 @@
   }
 }
 
+.read-only-notice {
+  color: var(--error-color);
+  font-weight: 500;
+  font-size: 0.9em;
+  margin-left: 8px;
+}
+
 /* --- Tab Styles --- */
 .user-tabs {
   margin-bottom: var(--spacing-large);
