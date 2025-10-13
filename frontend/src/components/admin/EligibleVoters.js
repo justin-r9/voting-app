@@ -86,7 +86,15 @@ const EligibleVoters = () => {
                   <>
                     <td><input className="form-input" name="regNumber" value={editingVoter.regNumber} onChange={handleChange} /></td>
                     <td><input className="form-input" name="phoneNumber" value={editingVoter.phoneNumber} onChange={handleChange} /></td>
-                    <td><input className="form-input" name="classLevel" value={editingVoter.classLevel} onChange={handleChange} /></td>
+                    <td>
+                      <select className="form-input" name="classLevel" value={editingVoter.classLevel} onChange={handleChange}>
+                        <option value="200L">200L</option>
+                        <option value="300L">300L</option>
+                        <option value="400L">400L</option>
+                        <option value="500L">500L</option>
+                        <option value="600L">600L</option>
+                      </select>
+                    </td>
                     <td className="action-buttons">
                       <button className="btn" onClick={() => handleSave(voter._id)}>Save</button>
                       <button className="btn-cancel" onClick={handleCancel}>Cancel</button>

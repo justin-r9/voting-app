@@ -10,8 +10,26 @@ const User = require('../models/User');
 const auth = require('../middleware/auth');
 const adminAuth = require('../middleware/adminAuth');
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1024 * 1024 * 5 }, // 5MB file size limit
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    }
+  }
+});
 
 // --- Voter Upload ---
 router.post('/upload-voters', [auth, adminAuth, upload.single('votersFile')], async (req, res) => {
@@ -201,8 +219,18 @@ router.get('/users', [auth, adminAuth], async (req, res) => {
     }
 });
 router.put('/users/:id', [auth, adminAuth], async (req, res) => {
-    const { name, email, age, classLevel, gender, hasVoted } = req.body;
+    const { name, email, age, classLevel, gender, hasVoted, regNumber, phoneNumber } = req.body;
     try {
+        const eligibleVoter = await EligibleVoter.findOne({
+            regNumber,
+            phoneNumber: `+${phoneNumber}`,
+            classLevel
+        });
+
+        if (!eligibleVoter) {
+            return res.status(400).json({ message: 'The updated details do not match any eligible voter.' });
+        }
+
         const updatedUser = await User.findByIdAndUpdate(
             req.params.id,
             { $set: { name, email, age, classLevel, gender, hasVoted } },
@@ -227,9 +255,14 @@ router.delete('/users/:id', [auth, adminAuth], async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-router.post('/candidates', [auth, adminAuth], async (req, res) => {
+router.post('/candidates', [auth, adminAuth, upload.single('photo')], async (req, res) => {
   try {
-    const newCandidate = new Candidate(req.body);
+    const { name, position } = req.body;
+    const newCandidate = new Candidate({
+      name,
+      position,
+      photo: req.file.path
+    });
     await newCandidate.save();
     res.status(201).json(newCandidate);
   } catch (error) {
@@ -238,15 +271,20 @@ router.post('/candidates', [auth, adminAuth], async (req, res) => {
 });
 router.get('/candidates', async (req, res) => {
   try {
-    const candidates = await Candidate.find().populate('position', 'name');
+    const candidates = await Candidate.find().populate('position', 'name').sort({ position: 1 });
     res.json(candidates);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching candidates.', error: error.message });
   }
 });
-router.put('/candidates/:id', [auth, adminAuth], async (req, res) => {
+router.put('/candidates/:id', [auth, adminAuth, upload.single('photo')], async (req, res) => {
   try {
-    const updatedCandidate = await Candidate.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const { name, position } = req.body;
+    let photo = req.body.photo;
+    if (req.file) {
+      photo = req.file.path;
+    }
+    const updatedCandidate = await Candidate.findByIdAndUpdate(req.params.id, { name, position, photo }, { new: true });
     if (!updatedCandidate) return res.status(404).json({ message: 'Candidate not found.' });
     res.json(updatedCandidate);
   } catch (error) {

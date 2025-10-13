@@ -6,7 +6,7 @@ const CandidateManager = () => {
   const [positions, setPositions] = useState([]);
   const [newPositionName, setNewPositionName] = useState('');
   const [candidates, setCandidates] = useState([]);
-  const [formData, setFormData] = useState({ name: '', position: '', photoUrl: '' });
+  const [formData, setFormData] = useState({ name: '', position: '', photo: null });
   const [editingId, setEditingId] = useState(null);
   const [message, setMessage] = useState('');
 
@@ -41,11 +41,15 @@ const CandidateManager = () => {
   }, [fetchCandidates, fetchPositions]);
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (e.target.name === 'photo') {
+      setFormData({ ...formData, photo: e.target.files[0] });
+    } else {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
   };
 
   const resetForm = useCallback(() => {
-    setFormData({ name: '', position: '', photoUrl: '' });
+    setFormData({ name: '', position: '', photo: null });
     setEditingId(null);
   }, []);
 
@@ -55,12 +59,19 @@ const CandidateManager = () => {
       setMessage('Name and position are required.');
       return;
     }
+    const candidateData = new FormData();
+    candidateData.append('name', formData.name);
+    candidateData.append('position', formData.position);
+    if (formData.photo) {
+      candidateData.append('photo', formData.photo);
+    }
+
     try {
       if (editingId) {
-        await api.put(`/admin/candidates/${editingId}`, formData);
+        await api.put(`/admin/candidates/${editingId}`, candidateData);
         setMessage('Candidate updated successfully.');
       } else {
-        await api.post('/admin/candidates', formData);
+        await api.post('/admin/candidates', candidateData);
         setMessage('Candidate created successfully.');
       }
       resetForm();
@@ -74,7 +85,7 @@ const CandidateManager = () => {
   const handleEdit = useCallback((candidate) => {
     setEditingId(candidate._id);
     // When editing, the position object is populated. We need to set the form's position value to the _id.
-    setFormData({ name: candidate.name, position: candidate.position._id, photoUrl: candidate.photoUrl || '' });
+    setFormData({ name: candidate.name, position: candidate.position._id, photo: candidate.photo || null });
     setMessage('');
   }, []);
 
@@ -156,8 +167,8 @@ const CandidateManager = () => {
             </select>
           </div>
           <div className="form-group">
-            <label>Photo URL (Optional)</label>
-            <input className="form-input" name="photoUrl" value={formData.photoUrl} onChange={handleInputChange} placeholder="https://example.com/photo.jpg" />
+            <label>Photo</label>
+            <input className="form-input" type="file" name="photo" onChange={handleInputChange} />
           </div>
           <div className="form-actions">
             <button type="submit" className="btn">{editingId ? 'Update Candidate' : 'Create Candidate'}</button>
@@ -169,20 +180,25 @@ const CandidateManager = () => {
 
       <div className="candidate-list-container">
         <h3>Current Candidates</h3>
-        <ul className="candidate-list">
-          {candidates.map((candidate) => (
-            <li key={candidate._id} className="candidate-item">
-              <div className="candidate-info">
-                <span className="candidate-name">{candidate.name}</span>
-                <span className="candidate-position">{candidate.position?.name}</span>
-              </div>
-              <div className="candidate-actions">
-                <button className="btn" onClick={() => handleEdit(candidate)}>Edit</button>
-                <button className="btn btn-danger" onClick={() => handleDelete(candidate._id)}>Delete</button>
-              </div>
-            </li>
-          ))}
-        </ul>
+        {positions.map(position => (
+          <div key={position._id} className="position-group">
+            <h4>{position.name}</h4>
+            <ul className="candidate-list">
+              {candidates.filter(c => c.position._id === position._id).map(candidate => (
+                <li key={candidate._id} className="candidate-item">
+                  <img src={`/${candidate.photo}`} alt={candidate.name} className="candidate-photo" />
+                  <div className="candidate-info">
+                    <span className="candidate-name">{candidate.name}</span>
+                  </div>
+                  <div className="candidate-actions">
+                    <button className="btn" onClick={() => handleEdit(candidate)}>Edit</button>
+                    <button className="btn btn-danger" onClick={() => handleDelete(candidate._id)}>Delete</button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </div>
   );
