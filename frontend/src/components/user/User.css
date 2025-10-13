@@ -22,7 +22,7 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: var(--text-color);
   animation: fadeIn 0.5s ease-in-out;
-  max-height: 90vh; /* Limit height to 90% of the viewport height */
+  max-height: calc(100vh - 80px); /* Adjust max height to account for vertical margins */
   overflow-y: auto; /* Add a scrollbar if content overflows */
 }
 
