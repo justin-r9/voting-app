@@ -37,7 +37,7 @@ router.post('/register', async (req, res) => {
     // Check if regNumber, phoneNumber, AND classLevel all match a single document.
     const eligibleVoter = await EligibleVoter.findOne({
       regNumber,
-      phoneNumber,
+      phoneNumber: `+${phoneNumber}`,
       classLevel
     });
 
