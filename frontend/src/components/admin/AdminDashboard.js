@@ -7,6 +7,7 @@ import ResultsDashboard from './ResultsDashboard';
 import UserManagement from './UserManagement';
 // Import new component for eligible voters
 import EligibleVoters from './EligibleVoters';
+import DangerZone from './DangerZone'; // Import the new component
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -32,6 +33,8 @@ const AdminDashboard = () => {
         return <ElectionSettings />;
       case 'upload':
         return <VoterUpload />;
+      case 'danger-zone':
+        return <DangerZone />;
       default:
         return <ResultsDashboard />;
     }
@@ -51,6 +54,7 @@ const AdminDashboard = () => {
         <button onClick={() => setActiveTab('candidates')} className={activeTab === 'candidates' ? 'active' : ''}>Candidates</button>
         <button onClick={() => setActiveTab('settings')} className={activeTab === 'settings' ? 'active' : ''}>Settings</button>
         <button onClick={() => setActiveTab('upload')} className={activeTab === 'upload' ? 'active' : ''}>Upload List</button>
+        <button onClick={() => setActiveTab('danger-zone')} className={activeTab === 'danger-zone' ? 'active danger-zone-tab' : 'danger-zone-tab'}>Danger Zone</button>
       </nav>
 
       <div className="admin-tab-content card">

@@ -1,0 +1,46 @@
+/* src/components/admin/DangerZone.css */
+
+.danger-zone-container {
+  padding: var(--spacing-large);
+  border: 2px solid var(--error-color);
+  border-radius: var(--border-radius);
+  background-color: #fff5f5;
+}
+
+.danger-zone-container h3 {
+  color: var(--error-color);
+  margin-top: 0;
+  border-bottom: 1px solid #ffcdd2;
+  padding-bottom: var(--spacing-medium);
+}
+
+.danger-action {
+  margin-top: var(--spacing-large);
+}
+
+.danger-button {
+  background-color: var(--error-color);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.2em;
+  font-weight: bold;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 400px;
+  display: block;
+  margin-top: var(--spacing-medium);
+}
+
+.danger-button:hover {
+  background-color: #c62828; /* Darker red */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.danger-zone-tab {
+    color: var(--error-color) !important;
+    font-weight: bold;
+}

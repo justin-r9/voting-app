@@ -381,4 +381,25 @@ router.get('/results', [auth, adminAuth], async (req, res) => {
   }
 });
 
+// --- DANGER ZONE ---
+// @route   DELETE /api/admin/database-reset
+// @desc    Reset the entire election database
+// @access  Private (Admin Only)
+router.delete('/database-reset', [auth, adminAuth], async (req, res) => {
+  try {
+    // This is a very destructive operation. We will delete all data from the key collections.
+    await Vote.deleteMany({});
+    await Candidate.deleteMany({});
+    await Position.deleteMany({});
+    // Delete all non-admin users
+    await User.deleteMany({ isAdmin: false });
+    await EligibleVoter.deleteMany({});
+
+    res.json({ message: 'The election database has been completely reset.' });
+  } catch (err) {
+    console.error('Database reset failed:', err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router;
