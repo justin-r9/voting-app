@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../utils/api';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer
+} from 'recharts';
 import './ResultsDashboard.css';
 
 const ResultsDashboard = () => {
@@ -40,7 +43,25 @@ const ResultsDashboard = () => {
   };
 
   const classDemographics = groupDemographics(results.demographics.byClass, 'classLevel');
-  const genderDemographics = groupDemographics(results.demographics.byGender, 'gender');
+
+  // Calculate overall gender statistics for charts
+  let totalMaleVotes = 0;
+  let totalFemaleVotes = 0;
+  if (results && results.demographics && results.demographics.byGender) {
+    results.demographics.byGender.forEach(item => {
+      if (item.gender === 'Male') {
+        totalMaleVotes += item.count;
+      } else if (item.gender === 'Female') {
+        totalFemaleVotes += item.count;
+      }
+    });
+  }
+
+  const genderChartData = [
+    { name: 'Male', votes: totalMaleVotes },
+    { name: 'Female', votes: totalFemaleVotes },
+  ];
+  const COLORS = ['#0088FE', '#00C49F'];
 
   return (
     <div className="results-dashboard">
@@ -107,25 +128,53 @@ const ResultsDashboard = () => {
       </div>
 
       <h4>Demographics by Gender</h4>
-      <div className="table-responsive">
-        <table className="results-table">
-          <thead>
-            <tr>
-              <th>Candidate</th>
-              <th>Male</th>
-              <th>Female</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.keys(genderDemographics).map(name => (
-              <tr key={name}>
-                <td>{name}</td>
-                <td>{genderDemographics[name]['Male'] || 0}</td>
-                <td>{genderDemographics[name]['Female'] || 0}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="gender-demographics-container">
+        <div className="gender-summary-text">
+          <p><strong>Total Male Votes:</strong> {totalMaleVotes}</p>
+          <p><strong>Total Female Votes:</strong> {totalFemaleVotes}</p>
+        </div>
+        <div className="charts-container">
+          <div className="chart-wrapper">
+            <h5>Gender Distribution (Pie Chart)</h5>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={genderChartData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="votes"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                >
+                  {genderChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="chart-wrapper">
+            <h5>Gender Distribution (Bar Chart)</h5>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={genderChartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="votes" fill="#8884d8">
+                  {genderChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
     </div>
   );

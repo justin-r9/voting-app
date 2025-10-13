@@ -76,6 +76,7 @@ const EligibleVoters = () => {
               <th>Registration Number</th>
               <th>Phone Number</th>
               <th>Class Level</th>
+              <th>Gender</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -95,6 +96,12 @@ const EligibleVoters = () => {
                         <option value="600L">600L</option>
                       </select>
                     </td>
+                    <td>
+                      <select className="form-input" name="gender" value={editingVoter.gender} onChange={handleChange}>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                      </select>
+                    </td>
                     <td className="action-buttons">
                       <button className="btn" onClick={() => handleSave(voter._id)}>Save</button>
                       <button className="btn-cancel" onClick={handleCancel}>Cancel</button>
@@ -105,6 +112,7 @@ const EligibleVoters = () => {
                     <td>{voter.regNumber}</td>
                     <td>{voter.phoneNumber}</td>
                     <td>{voter.classLevel}</td>
+                    <td>{voter.gender}</td>
                     <td className="action-buttons">
                       <button className="btn" onClick={() => handleEdit(voter)}>Edit</button>
                       <button className="btn btn-delete" onClick={() => handleDelete(voter._id)}>Delete</button>

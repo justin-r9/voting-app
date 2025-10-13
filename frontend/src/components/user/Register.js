@@ -11,7 +11,7 @@ const Register = () => {
     name: '',
     regNumber: '',
     phoneNumber: '',
-    classLevel: '100L',
+    classLevel: '200L',
     gender: 'Male',
     age: '',
   });
