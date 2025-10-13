@@ -61,7 +61,7 @@ const EditProfile = () => {
         <h2>Edit My Profile</h2>
         <div>
             <Link to="/" className="home-link">Home</Link>
-            <button onClick={() => navigate(-1)} className="btn btn-cancel">Cancel</button>
+            <button onClick={() => navigate(-1)} className="cancel-button">Cancel</button>
         </div>
       </header>
       <form className="user-form" onSubmit={onSubmit}>
