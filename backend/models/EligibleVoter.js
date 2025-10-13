@@ -19,6 +19,11 @@ const eligibleVoterSchema = new Schema({
     type: String,
     required: true,
     enum: ['200L', '300L', '400L', '500L', '600L']
+  },
+  gender: {
+    type: String,
+    required: true,
+    enum: ['Male', 'Female']
   }
 }, {
   timestamps: true,

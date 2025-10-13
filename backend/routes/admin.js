@@ -56,8 +56,8 @@ router.post('/upload-voters', [auth, adminAuth, upload.single('votersFile')], as
     }
 
     const actualHeaders = (rows[0] || []).map(h => String(h).trim());
-    // Expect only two headers now
-    const expectedHeaders = ['regNumber', 'phoneNumber'];
+    // Expect three headers now
+    const expectedHeaders = ['regNumber', 'phoneNumber', 'gender'];
 
     const isValid = expectedHeaders.length === actualHeaders.length && expectedHeaders.every((value, index) => value === actualHeaders[index]);
 
@@ -88,6 +88,7 @@ router.post('/upload-voters', [auth, adminAuth, upload.single('votersFile')], as
       return {
         regNumber: row.regNumber,
         phoneNumber: phoneNumberStr.startsWith('+') ? phoneNumberStr : `+${phoneNumberStr}`,
+        gender: row.gender,
         classLevel: classLevel // Add the selected classLevel to each record
       };
     });
@@ -224,7 +225,8 @@ router.put('/users/:id', [auth, adminAuth], async (req, res) => {
         const eligibleVoter = await EligibleVoter.findOne({
             regNumber,
             phoneNumber: `+${phoneNumber}`,
-            classLevel
+            classLevel,
+            gender
         });
 
         if (!eligibleVoter) {
@@ -257,6 +259,9 @@ router.delete('/users/:id', [auth, adminAuth], async (req, res) => {
 });
 router.post('/candidates', [auth, adminAuth, upload.single('photo')], async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'Candidate photo is required.' });
+    }
     const { name, position } = req.body;
     const newCandidate = new Candidate({
       name,
