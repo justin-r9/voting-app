@@ -18,21 +18,35 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + '-' + file.originalname);
   }
 });
-const upload = multer({
+const imageUpload = multer({
   storage: storage,
   limits: { fileSize: 1024 * 1024 * 5 }, // 5MB file size limit
   fileFilter: (req, file, cb) => {
-    if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+    if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg") {
       cb(null, true);
     } else {
-      cb(null, false);
-      return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+      cb(new Error('Only .png, .jpg and .jpeg format allowed!'), false);
+    }
+  }
+});
+
+const excelUpload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    const allowedMimeTypes = [
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+      'application/vnd.ms-excel' // .xls
+    ];
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only Excel files (.xlsx, .xls) are allowed.'), false);
     }
   }
 });
 
 // --- Voter Upload ---
-router.post('/upload-voters', [auth, adminAuth, upload.single('votersFile')], async (req, res) => {
+router.post('/upload-voters', [auth, adminAuth, excelUpload.single('votersFile')], async (req, res) => {
   console.log('--- File Upload Received ---');
   if (!req.file) {
     console.log('Error: No file was uploaded.');
@@ -127,11 +141,11 @@ router.get('/eligible-voters', [auth, adminAuth], async (req, res) => {
 });
 
 router.put('/eligible-voters/:id', [auth, adminAuth], async (req, res) => {
-  const { regNumber, phoneNumber, classLevel } = req.body;
+  const { regNumber, phoneNumber, classLevel, gender } = req.body;
   try {
     const updatedVoter = await EligibleVoter.findByIdAndUpdate(
       req.params.id,
-      { $set: { regNumber, phoneNumber, classLevel } },
+      { $set: { regNumber, phoneNumber, classLevel, gender } },
       { new: true, runValidators: true }
     );
     if (!updatedVoter) {
@@ -159,7 +173,7 @@ router.delete('/eligible-voters/:id', [auth, adminAuth], async (req, res) => {
 
 
 // --- Position Management ---
-router.get('/positions', [auth, adminAuth], async (req, res) => {
+router.get('/positions', async (req, res) => {
   try {
     const positions = await Position.find().sort({ name: 1 });
     res.json(positions);
@@ -257,7 +271,7 @@ router.delete('/users/:id', [auth, adminAuth], async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-router.post('/candidates', [auth, adminAuth, upload.single('photo')], async (req, res) => {
+router.post('/candidates', [auth, adminAuth, imageUpload.single('photo')], async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'Candidate photo is required.' });
@@ -275,6 +289,7 @@ router.post('/candidates', [auth, adminAuth, upload.single('photo')], async (req
   }
 });
 router.get('/candidates', async (req, res) => {
+  // Fetches all candidates, sorted by position
   try {
     const candidates = await Candidate.find().populate('position', 'name').sort({ position: 1 });
     res.json(candidates);
@@ -282,7 +297,7 @@ router.get('/candidates', async (req, res) => {
     res.status(500).json({ message: 'Error fetching candidates.', error: error.message });
   }
 });
-router.put('/candidates/:id', [auth, adminAuth, upload.single('photo')], async (req, res) => {
+router.put('/candidates/:id', [auth, adminAuth, imageUpload.single('photo')], async (req, res) => {
   try {
     const { name, position } = req.body;
     let photo = req.body.photo;

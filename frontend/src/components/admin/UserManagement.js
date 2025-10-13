@@ -180,4 +180,5 @@ const UserManagement = () => {
   );
 };
 
+// Export the UserManagement component for use in the admin dashboard
 export default UserManagement;

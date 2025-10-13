@@ -11,7 +11,7 @@ const UserHomepage = () => {
   const [voteMessage, setVoteMessage] = useState('');
   const [candidates, setCandidates] = useState([]);
   const [positions, setPositions] = useState([]);
-  const [viewCandidates, setViewCandidates] = useState(false);
+  const [activeTab, setActiveTab] = useState('biodata'); // New state for tabs
   const navigate = useNavigate();
 
   const handleLogout = useCallback(() => {
@@ -88,35 +88,28 @@ const UserHomepage = () => {
         </div>
       </header>
 
-      <section className="user-section">
-        <h3>My Biodata</h3>
-        <ul>
-          <li><strong>Name:</strong> {user.name}</li>
-          <li><strong>Registration Number:</strong> {user.regNumber}</li>
-          <li><strong>Phone Number:</strong> {user.phoneNumber}</li>
-          <li><strong>Class:</strong> {user.classLevel}</li>
-          <li><strong>Email:</strong> {user.email}</li>
-          <li><strong>Gender:</strong> {user.gender}</li>
-          <li><strong>Age:</strong> {user.age}</li>
-        </ul>
-      </section>
+      <nav className="user-tabs">
+        <button onClick={() => setActiveTab('biodata')} className={activeTab === 'biodata' ? 'active' : ''}>My Biodata</button>
+        <button onClick={() => setActiveTab('candidates')} className={activeTab === 'candidates' ? 'active' : ''}>View Candidates</button>
+      </nav>
 
-      <section className="user-section">
-        <ElectionCountdown />
-        {isVotingOpen && !user.hasVoted && (
-          <button onClick={handleVoteClick} className="vote-button">
-            VOTE
-          </button>
-        )}
-        {user.hasVoted && <p><strong>You have already voted. Thank you for your participation.</strong></p>}
-        {voteMessage && <p className="user-message">{voteMessage}</p>}
-      </section>
+      {activeTab === 'biodata' && (
+        <section className="user-section">
+          <h3>My Biodata</h3>
+          <ul>
+            <li><strong>Name:</strong> {user.name}</li>
+            <li><strong>Registration Number:</strong> {user.regNumber}</li>
+            <li><strong>Phone Number:</strong> {user.phoneNumber}</li>
+            <li><strong>Class:</strong> {user.classLevel}</li>
+            <li><strong>Email:</strong> {user.email}</li>
+            <li><strong>Gender:</strong> {user.gender}</li>
+            <li><strong>Age:</strong> {user.age}</li>
+          </ul>
+        </section>
+      )}
 
-      <section className="user-section">
-        <button className="btn" onClick={() => setViewCandidates(!viewCandidates)}>
-          {viewCandidates ? 'Hide Candidates' : 'View Candidates'}
-        </button>
-        {viewCandidates && (
+      {activeTab === 'candidates' && (
+        <section className="user-section">
           <div className="candidate-list-container">
             <h3>Available Candidates</h3>
             {positions.map(position => (
@@ -135,7 +128,18 @@ const UserHomepage = () => {
               </div>
             ))}
           </div>
+        </section>
+      )}
+
+      <section className="user-section">
+        <ElectionCountdown />
+        {isVotingOpen && !user.hasVoted && (
+          <button onClick={handleVoteClick} className="vote-button">
+            VOTE
+          </button>
         )}
+        {user.hasVoted && <p><strong>You have already voted. Thank you for your participation.</strong></p>}
+        {voteMessage && <p className="user-message">{voteMessage}</p>}
       </section>
     </div>
   );
