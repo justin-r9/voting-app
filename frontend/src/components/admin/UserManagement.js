@@ -180,7 +180,7 @@ const UserManagement = () => {
 
               <div className="modal-footer">
                 <button type="submit" className="btn">Save Changes</button>
-                <button type="button" className="btn-cancel" onClick={() => setEditingUser(null)}>Cancel</button>
+                <button type="button" className="btn btn-cancel" onClick={() => setEditingUser(null)}>Cancel</button>
               </div>
             </form>
           </div>

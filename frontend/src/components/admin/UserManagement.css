@@ -32,6 +32,8 @@
   width: 90%;
   max-width: 500px;
   animation: slideIn 0.3s ease;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-header {
@@ -102,4 +104,12 @@
   .modal-header h3 {
     font-size: 1.2em;
   }
+}
+
+.btn-cancel {
+  background-color: var(--error-color);
+}
+
+.btn-cancel:hover {
+  background-color: #c62828; /* Darker red */
 }

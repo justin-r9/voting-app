@@ -84,7 +84,7 @@ const UserHomepage = () => {
         <div>
             <Link to="/" className="home-link">Home</Link>
             <Link to="/edit-profile" className="edit-profile-link">Edit Profile</Link>
-            <button onClick={handleLogout}>Logout</button>
+            <button onClick={handleLogout} className="btn">Logout</button>
         </div>
       </header>
 
